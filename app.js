@@ -21,17 +21,22 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')));
 
-// import route handlers
-var userRouter = require('./routes/userRoutes');
-
-// import the Person class from Person.js
-var Person = require('./database/database.js');
-//var db = require('./database/database.js');
-
 /*************************************************/
 
-// route for creating a new person via "create new person" form
-app.use('/create', userRouter);
+var accountRouter = require('./routes/accountRouter');
+
+//app.all('/', (req, res) => { res.redirect('/public/loginpage.html'); } );	when i fix login page
+app.all('/', (req, res) => { res.redirect('/public/personform.html'); } ); 
+
+app.use('/public', express.static('public'));
+
+// sign up and/or login 
+app.use('/account', accountRouter);
+
+/**********************class ex code; delete later***************************/
+
+// import the Person class from Person.js
+var Person = require('./database/Person.js');
 
 // route for showing all the people
 app.use('/all', (req, res) => {
@@ -97,13 +102,6 @@ app.use('/api', (req, res) => {
 		
 	    });
     });
-
-
-/*************************************************/
-
-app.use('/public', express.static('public'));
-
-app.all('/', (req, res) => { res.redirect('/public/personform.html'); } );
 
 module.exports = app;
 

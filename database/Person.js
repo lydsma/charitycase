@@ -6,7 +6,7 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   // we're connected!
-  console.info('connected to db');
+  console.info('Connected to db');
 });
 
 var Schema = mongoose.Schema;
