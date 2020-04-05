@@ -6,7 +6,7 @@ var db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-  console.info('Connected to db');
+  console.info('Connected to account db');
 });
 
 /*************************************************/
@@ -45,26 +45,52 @@ var createAccount_DB = function(nameInput, emailInput, passwordInput, callback) 
 		name: nameInput,
         email: emailInput,
         password: passwordInput
-	});
+    });
 
-	// save the person to the database
-	newAcct.save( (err) => { 
-		if (err) {
-		    res.type('html').status(200);
-		    res.write('uh oh: ' + err);
-            console.log(err);
+    Account.findOne({email: emailInput}, (err, account) => {
+        if (err) {
             callback(null, err);
-		}
-		else {
-		    // display the "successfull created" page using EJS
-            console.log('db> Success!' + newAcct);
-            callback(newAcct, null);
-		}
-	    } ); 
+        } else if (!account) {
+           console.log('Creating account');
+           newAcct.save( (err) => { 
+                if (err) {
+                    res.type('html').status(200);
+                    res.write('uh oh: ' + err);
+                    console.log(err);
+                    callback(null, err);
+                } else {
+                    // display the "successfull created" page using EJS
+                    console.log('Successfully saved: ' + newAcct);
+                    callback(newAcct, null);
+                }
+            }); 
+        } else {
+            console.log('account exists');
+            callback('account exists', null); 
+        }
+    });
+};
+
+var checkLogin_DB = function(emailInput, passwordInput, callback) {
+    Account.findOne({email: emailInput}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('account dne', null);
+        } else {
+            var passwordDB = account.password;
+            if (passwordInput == passwordDB) {
+                callback(account, null); //send back the account object
+            } else {
+                callback('incorrect password', null);
+            }
+        }
+    });
 };
 
 var accountdb = {
-    createAccount: createAccount_DB
+    createAccount: createAccount_DB,
+    checkLogin: checkLogin_DB
 }
 
 module.exports = accountdb;
