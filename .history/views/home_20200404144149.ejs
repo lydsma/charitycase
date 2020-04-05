@@ -1,0 +1,63 @@
+<!-- views/pages/home.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ../views/partials/head %>
+
+    <style>
+        .box {
+            display: none;
+            width: 300px;
+            height: 200px;
+            box-shadow: 0px 0px 10px 1px rgb(0, 0, 0);
+            background-color: transparent;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            margin: auto;
+            perspective: 100;
+            transition: transform 2.5s;
+            transform-style: preserve-3d;
+        }
+        
+    </style>
+</head>
+
+<% include ../views/partials/scripts %>
+
+<script>
+    $(document).ready(function () {
+
+        var pathname = window.location.pathname,
+            pages = ['/', 'about', 'content'];
+
+        console.log(pathname);
+
+        $('.nav-item').each(function (i) {
+            if (pathname.includes(pages[i])) $(this).addClass('active');
+            else if (this.className.includes('active')) $(this).removeClass('active');
+        });
+    });
+</script>
+
+<!--Body content-->
+
+<body class="container">
+    <header>
+        <% include ../views/partials/header %>
+    </header>
+
+    <main>
+        <div class="out" style="position: relative; height: 80vh; overflow: auto;">
+            <div class="box" id="box">
+            </div>
+        </div>
+
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+<!-- views/pages/home.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ../views/partials/head %>
+
+    <style>
+        .box {
+            
+        }
+        
+    </style>
+</head>
+
+<% include ../views/partials/scripts %>
+
+<script>
+    $(document).ready(function () {
+
+        var pathname = window.location.pathname,
+            pages = ['/', 'about', 'content'];
+
+        console.log(pathname);
+
+        $('.nav-item').each(function (i) {
+            if (pathname.includes(pages[i])) $(this).addClass('active');
+            else if (this.className.includes('active')) $(this).removeClass('active');
+        });
+    });
+</script>
+
+<!--Body content-->
+
+<body class="container">
+    <header>
+        <% include ../views/partials/header %>
+    </header>
+
+    <main>
+        <div class="out" style="position: relative; height: 80vh; overflow: auto;">
+            <div class="box" id="box">
+            </div>
+        </div>
+
+    </main>
+</body>
+
+</html>
