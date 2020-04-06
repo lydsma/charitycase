@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">CIS350FinalProjectHomeActivity</string>
+    <string-array name="category_array">
+        <item> "Food" </item>
+        <item> "Academic" </item>
+        <item> "Clothing" </item>
+    </string-array>
+
+    <string-array name="type_array">
+        <item>Seeking donors</item>
+        <item>Seeking recipients</item>
+    </string-array>
+</resources>
