@@ -2,40 +2,36 @@ var createError = require('http-errors')
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var bodyParser = require('body-parser'); 
 
 // set up Express
 var express = require('express');
+var session = require('express-session'); 
 var app = express();
 
-// set up EJS
-app.set('view engine', 'ejs');
-
-// set up BodyParser
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
-
+app.set('view engine', 'ejs'); // set up EJS
 app.set('views', path.join(__dirname, 'views')); // view engine setup
+app.use(cookieParser()); 
+app.use(session({secret: "initializepls",saveUninitialized: true,resave: false,cookie: { secure: true }})); //initialize cookie session 
 app.use(logger('dev'));
-app.use(cookieParser());
-//app.use(express.session({secret: "initialize session"}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')));
 /*************************************************/
-
+var sess; //global session var
 var accountRouter = require('./routes/accountRouter');
 var homeRouter = require('./routes/homeRouter');
 
 app.use('/public', express.static('public'));
 app.get('/', (req, res) => { res.render('login.ejs', {message: null}); } ); 
 
-// sign up and login routes
+// sign up, login, current user routes
 app.use('/account', accountRouter);
 
 // home routes
 app.use('/home', homeRouter);
-
 
 /**********************example code; delete later***************************/
 

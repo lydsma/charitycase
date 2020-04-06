@@ -1,0 +1,62 @@
+<!-- views/edit.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ../views/partials/head %>
+</head>
+
+<body class="container">
+    <header>
+        <% include ../views/partials/header %>
+    </header>
+    <main>
+        <h4><b><i> Edit your account info! </i></b></h4>
+        <div class = "div-name">
+            <form action="/account/changename" method="post"> 
+                <p>
+                Change your name: 
+                <p>
+                <input name="nameInput" placeholder="Enter new name">
+                    <%if (namemessage != null) { %>
+                        <p><span style="color: red;"><%= namemessage %></span></p>
+                    <% } %>
+                <input type="submit" value="Update!">
+            </form>
+        </div>
+        <p>
+        <p>
+        <div class="div-pw">
+            <form action="/account/checkpw" method="post"> 
+                <p>
+                Change your password: 
+                <p>
+                <input name="oldPassword" type = "password" placeholder="Enter old password">
+                <input type="submit" value="Verify old password!">
+                <%if (pwmessage != null) { %>
+                    <p><span style="color: red;"><%= pwmessage %></span></p>
+                <% } %>
+            </form>
+
+            <%if (changepw == true) { %>
+                <p>
+                    <form action="/account/changepw" method="post"> 
+                        <input name="newPassword" type = "password" placeholder="Enter new password">
+                        <input type="submit" value="Change password!">
+                    </form>
+                </p>
+            <% } %>
+        </div>
+        
+        <p>
+        <p>
+        <div class="div-delete">
+            <form action="/account/delete" method="get"> 
+                <input type="submit" value="Delete account">
+            </form>
+        <div>
+</main>
+</body>
+
+</html>

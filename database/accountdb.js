@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 // Connect to MongoDB
 mongoose.connect('mongodb+srv://dbUser350:mn%25Q3e5%24@cluster0-q1ukr.gcp.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.set('useFindAndModify', false);
 var db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -88,9 +89,50 @@ var checkLogin_DB = function(emailInput, passwordInput, callback) {
     });
 };
 
+var changeName_DB = function(emailInput, nameInput, callback) {
+    Account.findOneAndUpdate({email: emailInput}, {name: nameInput}, {new: true}, function (err, result) {
+        if (err) {
+            callback(null, err);
+        } else {
+            console.log(nameInput);
+            console.log(result.name);
+            if (nameInput == result.name) {
+                callback(result.name,null);
+            };
+        }
+    });
+};
+
+var changePassword_DB = function(emailInput, pwInput, callback) {
+    Account.findOneAndUpdate({email: emailInput}, {password: pwInput}, {new: true}, function (err, result) {
+        if (err) {
+            callback(null, err);
+        } else {
+            if (pwInput == result.password) {
+                callback(result.password,null);
+            };
+        }
+    });
+};
+
+var deleteAccount_DB = function(emailInput, callback) {
+    Account.deleteOne({email: emailInput}, function(err) {
+        if (err) {
+            console.log(err);
+            callback(null,err);
+        } else {
+            console.log('success');
+            callback(emailInput, null);
+        }
+    });
+};
+
 var accountdb = {
     createAccount: createAccount_DB,
-    checkLogin: checkLogin_DB
+    checkLogin: checkLogin_DB,
+    changeName: changeName_DB,
+    changePassword: changePassword_DB,
+    deleteAccount: deleteAccount_DB
 }
 
 module.exports = accountdb;
