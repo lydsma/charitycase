@@ -157,4 +157,14 @@ router.get('/edit', function (req, res) {
     });
   });
 
+  //get profile page
+  router.get('/profile', function(req,res) {
+    var email = sess.email;
+    var name = sess.fullname;
+    if (email) {
+      console.log('Loading profile page');
+      res.render('profile.ejs', {nameMessage: name, emailMessage: email}); 
+    }
+  });
+
   module.exports = router;

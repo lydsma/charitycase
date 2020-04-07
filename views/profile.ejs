@@ -1,0 +1,34 @@
+<!-- views/profile.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ../views/partials/head %>
+</head>
+
+<body class="container">
+    <header>
+        <% include ../views/partials/header %>
+    </header>
+    <main>
+        <div>
+        <form action="/account/profile" method="post">
+        <h4><b><i> Profile </i></b></h4>
+        <p>
+        Name: <%= nameMessage %>
+        <p>
+        Email: <%= emailMessage %>
+        <p>
+
+        </form>
+        </div>
+
+        <div class="div-signup">
+            <p></p>
+			<i><p id="signup"><font color="black"></font>Want to edit your account? <a href="/account/edit">You can do so here!</a></p></i>	
+		</div>
+</main>
+</body>
+
+</html>
