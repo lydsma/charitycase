@@ -7,13 +7,22 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:gravity="center_horizontal"
+        android:text="\n$lastName$"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="258dp" />
+
+    <TextView
         android:id="@+id/post1title2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#B0F3FB"
         android:text="First Name:"
-        tools:layout_editor_absoluteX="-16dp"
-        tools:layout_editor_absoluteY="210dp"></TextView>
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="156dp"></TextView>
 
     <TextView
         android:id="@+id/post1title3"
@@ -21,8 +30,8 @@
         android:layout_height="wrap_content"
         android:background="#B0F3FB"
         android:text="Last Name:"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="287dp"></TextView>
+        tools:layout_editor_absoluteX="-16dp"
+        tools:layout_editor_absoluteY="239dp"></TextView>
 
     <TextView
         android:id="@+id/textView2"
@@ -32,6 +41,15 @@
         android:text="\n\n\n Welcome, $username$! \n\n\n"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="36dp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="52dp"
+        android:gravity="center_horizontal"
+        android:text="\n$firstName$"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="175dp" />
 
     <TextView
         android:id="@+id/textView"
