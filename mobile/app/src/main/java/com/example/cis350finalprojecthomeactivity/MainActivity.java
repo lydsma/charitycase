@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -19,7 +18,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,8 +32,10 @@ public class MainActivity extends AppCompatActivity {
     int pageNum;
 
     PopupWindow popup;
-    String newPostType;
-    String newPostCategory;
+    boolean newPostType;
+    Category newPostCategory;
+
+    Map<Category, String> categoryToString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
         pageNum = 0;
         allPosts = new ArrayList<Post>();
         filteredPosts = new ArrayList<Post>();
+        categoryToString = new HashMap<Category, String>();
+
+        // set up map
+        setUpCategoryToString();
 
         // work with dummy posts for now (until we connect to database)
         addDummyPosts();
@@ -95,6 +102,10 @@ public class MainActivity extends AppCompatActivity {
         // make the new post and add it to all posts
         Post newPost = new Post(newPostCategory, zip, newPostType);
         allPosts.add(allPosts.size(), newPost);
+        filteredPosts.add(filteredPosts.size(), newPost);
+
+        // refresh page
+        refreshPage();
 
         // exit popup window
         popup.dismiss();
@@ -136,17 +147,22 @@ public class MainActivity extends AppCompatActivity {
         // perform necessary filtering
         filteredPosts = new ArrayList<Post>();
         for (Post post : allPosts) {
-            boolean include = ((includeAcademic && post.isAcademic()) ||
-                    (includeFood && post.isFood()) || (includeClothing && post.isClothing())) &&
-                    ((includeGivers && post.isGiving()) || (includeTakers && post.isTaking()));
+            boolean filterCategory = (includeAcademic && post.category == Category.EDUCATION) ||
+                    (includeFood && post.category == Category.FOOD) ||
+                    (includeClothing && post.category == Category.CLOTHING);
 
-            if (include) {
+            boolean filterType = (includeTakers && post.seekingDonations) ||
+                    (includeGivers && !post.seekingDonations);
+
+            boolean passesFilter = filterCategory && filterType;
+
+            if (passesFilter) {
                 filteredPosts.add(filteredPosts.size(), post);
             }
         }
 
         // set page num to 1 and refresh page
-        pageNum = 1;
+        pageNum = 0;
         refreshPage();
 
         // dismiss popup
@@ -160,18 +176,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void nextPageClick(View view) {
-        pageNum++;
-        refreshPage();
+        if (pageNum * 4 + 4 < filteredPosts.size()) {
+            pageNum++;
+        }
 
+        refreshPage();
     }
 
     public void prevPageClick(View view) {
-        if (pageNum == 0) {
-            return;
-        } else {
+        if (pageNum > 0) {
             pageNum--;
-            refreshPage();
         }
+
+        refreshPage();
     }
 
 
@@ -182,36 +199,23 @@ public class MainActivity extends AppCompatActivity {
 
     private class Post {
 
-        String category;
+        Category category;
         String zipCode;
-        String postType;
+        boolean seekingDonations;
         List<String> likes;
+        boolean empty;
 
-        public Post(String cat, String zip, String type) {
+        // represents empty post, can't have a final static instance bc it's an inner class
+        public Post() {
+            empty = true;
+        }
+
+        public Post(Category cat, String zip, boolean type) {
+            empty = false;
             this.category = cat;
             this.zipCode = zip;
-            this.postType = type;
+            this.seekingDonations = type;
             this.likes = new ArrayList<String>();
-        }
-
-        public boolean isAcademic() {
-            return this.category.toLowerCase().equals("academic");
-        }
-
-        public boolean isFood() {
-            return this.category.toLowerCase().equals("food");
-        }
-
-        public boolean isClothing() {
-            return this.category.toLowerCase().equals("clothing");
-        }
-
-        public boolean isGiving() {
-            return this.postType.toLowerCase().equals("seeking donations");
-        }
-
-        public boolean isTaking() {
-            return this.postType.toLowerCase().equals("seeking recipients");
         }
 
     }
@@ -248,19 +252,32 @@ public class MainActivity extends AppCompatActivity {
         int zipId = idNameToInt("post" + idxId + "zip");
         int typeId = idNameToInt("post" + idxId + "type");
 
-        String category = post.category;
-        String zip = post.zipCode;
-        String type = post.postType;
-
         TextView titleView = findViewById(titleId);
         TextView categoryView = findViewById(categoryId);
         TextView zipView = findViewById(zipId);
         TextView typeView = findViewById(typeId);
 
-        titleView.setText("Post " + (idx + 1));
-        categoryView.setText(category);
-        zipView.setText(zip);
-        typeView.setText(type);
+        if (post.empty) {
+            titleView.setText("No post to display");
+            categoryView.setText("");
+            zipView.setText("");
+            typeView.setText("");
+        } else {
+            String category = categoryToString.get(post.category);
+            String zip = post.zipCode;
+            String seekingDonations;
+
+            if (post.seekingDonations) {
+                seekingDonations = "Seeking donations";
+            } else {
+                seekingDonations = "Seeking recipients";
+            }
+
+            titleView.setText("Post " + (idx + 1));
+            categoryView.setText(category);
+            zipView.setText(zip);
+            typeView.setText(seekingDonations);
+        }
 
     }
 
@@ -270,8 +287,7 @@ public class MainActivity extends AppCompatActivity {
             if (i < filteredPosts.size()) {
                 displayPostInIdx(filteredPosts.get(i), i - (pageNum * 4));
             } else {
-                displayPostInIdx(new Post("Empty post", "", ""),
-                        i - (pageNum * 4));
+                displayPostInIdx(new Post(), i - (pageNum * 4));
             }
 
         }
@@ -294,8 +310,6 @@ public class MainActivity extends AppCompatActivity {
                 switch (attributeId) {
                     case "post-category":
                         return o1.category.compareTo(o2.category);
-                    case "post-type":
-                        return o1.postType.compareTo(o2.postType);
                     case "post-location":
                         return o1.zipCode.compareTo(o2.zipCode);
                     default:
@@ -309,13 +323,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addDummyPosts() {
-        allPosts.add(0, new Post("academic", "19104", "seeking donations"));
-        allPosts.add(1, new Post("food", "19111", "offering donations"));
-        allPosts.add(2, new Post("clothing", "19210", "offering donations"));
+        allPosts.add(0, new Post(Category.EDUCATION, "19104", true));
+        allPosts.add(1, new Post(Category.FOOD, "19111", false));
+        allPosts.add(2, new Post(Category.CLOTHING, "19210", false));
 
-        filteredPosts.add(0, new Post("academic", "19104", "seeking donations"));
-        filteredPosts.add(1, new Post("food", "19111", "offering donations"));
-        filteredPosts.add(2, new Post("clothing", "19210", "offering donations"));
+        for (Post post : allPosts) {
+            filteredPosts.add(filteredPosts.size(), post);
+        }
     }
 
     /*
@@ -356,12 +370,24 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selection = parent.getItemAtPosition(position).toString();
+                String selection = parent.getItemAtPosition(position).toString().toLowerCase();
 
                 if (attributeID.equals("post-category")) {
-                    newPostCategory = selection;
+                    switch (selection) {
+                        case "academic":
+                            newPostCategory = Category.EDUCATION;
+                            break;
+                        case "food":
+                            newPostCategory = Category.FOOD;
+                            break;
+                        case "clothing":
+                            newPostCategory = Category.CLOTHING;
+                            break;
+                        default:
+                            break;
+                    }
                 } else if (attributeID.equals("post-type")) {
-                    newPostType = selection;
+                    newPostType = selection.equals("seeking donations");
                 }
             }
 
@@ -384,10 +410,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     private enum Category {
-        FOOD, EDUCATION, CLOTHING
+        FOOD, EDUCATION, CLOTHING, NULL
     }
 
     private enum PostType {
         SEEK_DONOR, SEEK_RECIPIENT
+    }
+
+    private void setUpCategoryToString() {
+        categoryToString.put(Category.EDUCATION, "Category: Academic supplies");
+        categoryToString.put(Category.FOOD, "Category: Food");
+        categoryToString.put(Category.CLOTHING, "Category: Clothing");
+        categoryToString.put(Category.NULL, "");
     }
 }
