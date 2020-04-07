@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:background="#B0F3FB"
+        android:background="#BBDEFB"
         android:text="Email:"
         app:layout_constraintTop_toBottomOf="@+id/textView4"
         tools:layout_editor_absoluteX="0dp"></TextView>
@@ -38,7 +38,7 @@
         android:id="@+id/post1title2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#B0F3FB"
+        android:background="#BBDEFB"
         android:text="First Name:"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="156dp"></TextView>
@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:background="#B0F3FB"
+        android:background="#BBDEFB"
         android:text="Last Name:"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
         tools:layout_editor_absoluteX="-16dp"></TextView>
