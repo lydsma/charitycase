@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#004B55"
+            android:background="#0D47A1"
             android:text="$AppName$   \n HomeActivity"
 
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -40,7 +40,7 @@
                 android:id="@+id/post1title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#B0F3FB"
+                android:background="#BBDEFB"
                 android:text="This is a post"></TextView>
 
             <LinearLayout
@@ -110,7 +110,7 @@
                 android:id="@+id/post2title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#B0F3FB"
+                android:background="#BBDEFB"
                 android:text="This is a post"></TextView>
 
             <LinearLayout
@@ -180,7 +180,7 @@
                 android:id="@+id/post3title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#B0F3FB"
+                android:background="#BBDEFB"
                 android:text="This is a post"></TextView>
 
             <LinearLayout
@@ -250,7 +250,7 @@
                 android:id="@+id/post4title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#B0F3FB"
+                android:background="#BBDEFB"
                 android:text="This is a post"></TextView>
 
             <LinearLayout
@@ -330,27 +330,11 @@
                 android:onClick="onNewPostButtonClick"
                 />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="0.75"
+            <Button
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="  Filter posts by:  "
-                    android:gravity="center"></TextView>
-
-                <Spinner
-                    android:id="@+id/sortPosts"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="10dp"
-                    />
-
-
-            </LinearLayout>
+                android:text="Filter posts"
+                android:onClick="onFilterClick"></Button>
 
             <LinearLayout
                 android:layout_width="0dp"

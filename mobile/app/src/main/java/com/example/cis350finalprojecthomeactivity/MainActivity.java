@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -25,51 +26,29 @@ public class MainActivity extends AppCompatActivity {
     String userID;
 
     List<Post> allPosts;
+    List<Post> filteredPosts;
+
     int pageNum;
 
-    PopupWindow newPostPopup;
+    PopupWindow popup;
     String newPostType;
     String newPostCategory;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // set up instance variables
         pageNum = 0;
-
         allPosts = new ArrayList<Post>();
+        filteredPosts = new ArrayList<Post>();
 
         // work with dummy posts for now (until we connect to database)
         addDummyPosts();
 
         // Refresh directory of posts
         refreshPage();
-
-        // Home activity has button for new post and spinner for sorting posts
-        Button newPost = (Button) findViewById(R.id.newPost);
-        Spinner sortPosts = (Spinner) findViewById(R.id.sortPosts);
-
-        // Set up sort post spinner contents
-        ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(
-                this, R.array.category_array, android.R.layout.simple_spinner_item);
-        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sortPosts.setAdapter(sortAdapter);
-
-        // Toast.makeText(this, allPosts.size(), Toast.LENGTH_SHORT);
-
-//        // Set up sort post selection listener
-//        sortPosts.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {}
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {}
-//
-//        });
-
     }
 
 
@@ -78,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     - onNewPostButtonClick
     - onSubmitButtonClick
     - onSortButtonClick
+    - prevPageClick
+    - nextPageClick
      */
 
 
@@ -86,48 +67,94 @@ public class MainActivity extends AppCompatActivity {
         // Set up popup
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.post_popup_window, null);
-
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        newPostPopup = new PopupWindow(popupView, width, height, true);
+        popup = new PopupWindow(popupView, width, height, true);
 
         // Launch popup and define content
-        newPostPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
-        View popupContent = newPostPopup.getContentView();
+        popup.showAtLocation(view, Gravity.CENTER, 0, 0);
+        View popupContent = popup.getContentView();
 
         // Defining spinners
         Spinner categorySpinner = popupContent.findViewById(R.id.popup_category);
         Spinner typeSpinner = popupContent.findViewById(R.id.popup_type);
 
         // Setting up spinner listeners + adapters
-        setUpSimpleSpinner(categorySpinner, R.array.category_array, "category");
-        setUpSimpleSpinner(typeSpinner, R.array.type_array, "type");
+        setUpSimpleSpinner(categorySpinner, R.array.category_array, "post-category");
+        setUpSimpleSpinner(typeSpinner, R.array.type_array, "post-type");
 
     }
 
     public void onSubmitButtonClick(View view) {
 
         // find the popup content and get the zip code, other post info stored as attributes
-        View popupContent = newPostPopup.getContentView();
+        View popupContent = popup.getContentView();
         EditText zipEditText = (EditText) popupContent.findViewById(R.id.popup_address_content);
         String zip = zipEditText.getText().toString();
 
         // make the new post and add it to all posts
         Post newPost = new Post(newPostCategory, zip, newPostType);
-
-        int tl = allPosts.size();
-
-        allPosts.add(tl, newPost);
-        displayPostInIdx(allPosts.get(tl), 0);
+        allPosts.add(allPosts.size(), newPost);
 
         // exit popup window
-        newPostPopup.dismiss();
+        popup.dismiss();
     }
 
-    public void onSortButtonClick(View view) {
+    // @ TODO implement this, it might make sense to also have a button for sort (+spinner)
+    public void onFilterClick(View view) {
+
+        // Set up popup
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.filter_popup, null);
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        popup = new PopupWindow(popupView, width, height, true);
+
+        // Launch popup
+        popup.showAtLocation(view, Gravity.CENTER, 0, 0);
 
     }
 
+    // @TODO implement this, submits a filter
+    public void onFilterConfirmClick(View view) {
+
+        // get popup content
+        View popupContent = popup.getContentView();
+
+        // Getting user input filter configuration
+        boolean includeAcademic =
+                ((CheckBox) popupContent.findViewById(R.id.include_academic)).isChecked();
+        boolean includeFood =
+                ((CheckBox) popupContent.findViewById(R.id.include_food)).isChecked();
+        boolean includeClothing =
+                ((CheckBox) popupContent.findViewById(R.id.include_clothing)).isChecked();
+        boolean includeGivers =
+                ((CheckBox) popupContent.findViewById(R.id.seeking_receipients)).isChecked();
+        boolean includeTakers =
+                ((CheckBox) popupContent.findViewById(R.id.seeking_donors)).isChecked();
+
+        // perform necessary filtering
+        filteredPosts = new ArrayList<Post>();
+        for (Post post : allPosts) {
+            boolean include = ((includeAcademic && post.isAcademic()) ||
+                    (includeFood && post.isFood()) || (includeClothing && post.isClothing())) &&
+                    ((includeGivers && post.isGiving()) || (includeTakers && post.isTaking()));
+
+            if (include) {
+                filteredPosts.add(filteredPosts.size(), post);
+            }
+        }
+
+        // set page num to 1 and refresh page
+        pageNum = 1;
+        refreshPage();
+
+        // dismiss popup
+        popup.dismiss();
+
+    }
+
+    // @TODO implement this, it should pull posts from Mongo and write them to appPosts
     public void refreshButtonClick(View view) {
 
     }
@@ -165,6 +192,26 @@ public class MainActivity extends AppCompatActivity {
             this.zipCode = zip;
             this.postType = type;
             this.likes = new ArrayList<String>();
+        }
+
+        public boolean isAcademic() {
+            return this.category.toLowerCase().equals("academic");
+        }
+
+        public boolean isFood() {
+            return this.category.toLowerCase().equals("food");
+        }
+
+        public boolean isClothing() {
+            return this.category.toLowerCase().equals("clothing");
+        }
+
+        public boolean isGiving() {
+            return this.postType.toLowerCase().equals("seeking donations");
+        }
+
+        public boolean isTaking() {
+            return this.postType.toLowerCase().equals("seeking recipients");
         }
 
     }
@@ -219,8 +266,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void refreshPage() {
 
-        for (int i = pageNum * 4; i < Math.min((pageNum * 4) + 4, allPosts.size()); i++) {
-            displayPostInIdx(allPosts.get(i), i - (pageNum * 4));
+        for (int i = pageNum * 4; i < (pageNum * 4) + 4; i++) {
+            if (i < filteredPosts.size()) {
+                displayPostInIdx(filteredPosts.get(i), i - (pageNum * 4));
+            } else {
+                displayPostInIdx(new Post("Empty post", "", ""),
+                        i - (pageNum * 4));
+            }
+
         }
 
         TextView pageNumView = findViewById(R.id.pageNum);
@@ -239,11 +292,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public int compare(Post o1, Post o2) {
                 switch (attributeId) {
-                    case "category":
+                    case "post-category":
                         return o1.category.compareTo(o2.category);
-                    case "type":
+                    case "post-type":
                         return o1.postType.compareTo(o2.postType);
-                    case "location":
+                    case "post-location":
                         return o1.zipCode.compareTo(o2.zipCode);
                     default:
                         return 0;
@@ -259,6 +312,10 @@ public class MainActivity extends AppCompatActivity {
         allPosts.add(0, new Post("academic", "19104", "seeking donations"));
         allPosts.add(1, new Post("food", "19111", "offering donations"));
         allPosts.add(2, new Post("clothing", "19210", "offering donations"));
+
+        filteredPosts.add(0, new Post("academic", "19104", "seeking donations"));
+        filteredPosts.add(1, new Post("food", "19111", "offering donations"));
+        filteredPosts.add(2, new Post("clothing", "19210", "offering donations"));
     }
 
     /*
@@ -301,9 +358,9 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selection = parent.getItemAtPosition(position).toString();
 
-                if (attributeID.equals("category")) {
+                if (attributeID.equals("post-category")) {
                     newPostCategory = selection;
-                } else if (attributeID.equals("type")) {
+                } else if (attributeID.equals("post-type")) {
                     newPostType = selection;
                 }
             }
