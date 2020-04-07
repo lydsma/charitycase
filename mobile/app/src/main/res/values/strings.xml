@@ -7,7 +7,7 @@
     </string-array>
 
     <string-array name="type_array">
-        <item>Seeking donors</item>
+        <item>Seeking donations</item>
         <item>Seeking recipients</item>
     </string-array>
 </resources>
