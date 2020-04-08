@@ -17,7 +17,8 @@ var Schema = mongoose.Schema;
 var accountSchema = new Schema({    //for login
 	name: String, 
     email: String,
-    password: String
+    password: String,
+    recipient: Boolean
 });
 
 var profileSchema = new Schema({    //for signup
@@ -41,11 +42,12 @@ var Profile = mongoose.model('Profiles', profileSchema);
 
 /***********************DB calls**************************/
 
-var createAccount_DB = function(nameInput, emailInput, passwordInput, callback) {
+var createAccount_DB = function(nameInput, emailInput, passwordInput, accType, callback) {
     var newAcct = new Account ({
 		name: nameInput,
         email: emailInput,
-        password: passwordInput
+        password: passwordInput,
+        recipient: accType
     });
 
     Account.findOne({email: emailInput}, (err, account) => {

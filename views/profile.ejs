@@ -20,6 +20,12 @@
         <p>
         Email: <%= emailMessage %>
         <p>
+            <%if (accType) { %>
+                <p><span style="color: black;">Account Type: Recipient</span></p>
+            <% } else { %>
+                <p><span style="color: black;">Account Type: Donor</span></p>
+            <% } %>
+        <p>
 
         </form>
         </div>

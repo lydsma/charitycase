@@ -29,10 +29,14 @@ router.post('/create', function(req, res) {
     var name = req.body.name;
     var email = req.body.email;
     var password = req.body.password;
+    var accType = false;
+    if (req.body.checkAccType == 'on') {
+      accType = true;
+    }
 
     sess = req.session; 
 
-    accountdb.createAccount(name, email, password, function(results, err) {
+    accountdb.createAccount(name, email, password, accType, function(results, err) {
       if (err) {
         console.log(err);
         res.render('signup.ejs', {message: err});
@@ -45,6 +49,7 @@ router.post('/create', function(req, res) {
         console.log('Rendering home');
         sess.email = email;
         sess.fullname = name;
+        sess.recipient = accType;
         console.log('Cookies set ' + sess.email + ' ' + sess.fullname);
         res.redirect('/home');
       }
@@ -161,9 +166,10 @@ router.get('/edit', function (req, res) {
   router.get('/profile', function(req,res) {
     var email = sess.email;
     var name = sess.fullname;
+    var recipient = sess.recipient;
     if (email) {
       console.log('Loading profile page');
-      res.render('profile.ejs', {nameMessage: name, emailMessage: email}); 
+      res.render('profile.ejs', {nameMessage: name, emailMessage: email, accType: recipient}); 
     }
   });
 
