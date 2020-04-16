@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#E3F2FD">
+    android:background="@drawable/newpost_popup_background">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -12,10 +12,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#90CAF9"
+            android:background="@drawable/round_blue_border"
             android:gravity="center"
             android:text="Configure post filter"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"></TextView>
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp"></TextView>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -30,7 +32,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Choose categories\n to include:"></TextView>
+                    android:text="\nChoose categories to include:"></TextView>
 
                 <CheckBox
                     android:id="@+id/include_food"
@@ -60,7 +62,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Choose post types to include:"></TextView>
+                    android:text="\nChoose post types to include:"></TextView>
 
                 <CheckBox
                     android:id="@+id/seeking_donors"
@@ -85,7 +87,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Zip code filter"></TextView>
+                    android:text="\nZip code filter"></TextView>
 
                 <RadioButton
                     android:id="@+id/all_zip_radio"

@@ -15,3 +15,20 @@ var homedb = {
 }
 
 module.exports = homedb;
+
+var Schema = mongoose.Schema;
+
+var postSchema = new Schema({    //for login
+	  type: String, 
+    category: String,
+    address: String,
+    tags: String,
+    description: String
+});
+
+postSchema.methods.standardizeName = function() {
+    this.name = this.name.toLowerCase();
+    return this.name;
+}
+
+var Post = mongoose.model('Posts', accountSchema);
