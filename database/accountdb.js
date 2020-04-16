@@ -21,24 +21,12 @@ var accountSchema = new Schema({    //for login
     recipient: Boolean
 });
 
-var profileSchema = new Schema({    //for signup
-    email: String,
-    name: String,
-    status: String, 
-    location: String
-});
-
 accountSchema.methods.standardizeName = function() {
-    this.name = this.name.toLowerCase();
-    return this.name;
-}
-profileSchema.methods.standardizeName = function() {
     this.name = this.name.toLowerCase();
     return this.name;
 }
 
 var Account = mongoose.model('Accounts', accountSchema);
-var Profile = mongoose.model('Profiles', profileSchema);
 
 /***********************DB calls**************************/
 
