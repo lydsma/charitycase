@@ -5,6 +5,60 @@
 
 <head>
     <% include ../views/partials/head %>
+    <script src="http://code.jquery.com/jquery.min.js"></script>
+    <script>
+        $("document").ready(function() {
+            $('input[type=file]').on("change", function() {
+                var $files = $(this).get(0).files;
+                if ($files.length) {
+                   /*
+                    //reject big ass files
+                    if ($files[0].size>$(this).data("max-size") * 1024) {
+                        console.log("File too big");
+                        // change html to say 'pls choose smaller file'
+                    } */
+
+                    console.log("uploading file to imgur");
+
+                    var apiUrl = 'https://api.imgur.com/3/image';
+                    var apiKey = '660a2b2b61c17f3';
+
+                    var settings = {
+                        async: false,
+                        crossDomain: true,
+                        processData: false,
+                        contentType: false,
+                        type: 'POST',
+                        url: apiUrl,
+                        headers: {
+                        Authorization: 'Client-ID ' + apiKey,
+                        Accept: 'application/json'
+                        },
+                        mimeType: 'multipart/form-data'
+                    };
+
+                    var formData = new FormData();
+                    formData.append("image", $files[0]);
+                    settings.data = formData;
+
+                    //ajax req to imgur to upload
+                    //response = stringified JSON
+                    //img url is now response.data.link
+                    $.ajax(settings).done(function(response) {
+                        console.log(response);
+                        var json = JSON.parse(response);
+                        console.log(json);
+                        var link = json.data.link;
+                        console.log(link);
+                        
+                        $("img").attr("src",link);
+                        console.log('changed');
+                    });
+                }
+            });
+        });
+
+    </script>
 </head>
 
 <body class="container">
@@ -15,6 +69,16 @@
         <div>
         <form action="/account/profile" method="post">
         <h4><b><i> Profile </i></b></h4>
+        <span>
+            <img src="https://www.searchpng.com/wp-content/uploads/2019/02/Deafult-Profile-Pitcher.png" 
+            alt="ProfilePic" class="w3-border w3-padding" style="width:100%;max-width:150px">
+            <p>
+            </p>
+            <p>
+                <i>Change your profile picture: </i><input type="file" name="profPic" accept="image/*" />
+            </p>
+        </span>
+        <p>
         <p>
         Name: <%= nameMessage %>
         <p>
