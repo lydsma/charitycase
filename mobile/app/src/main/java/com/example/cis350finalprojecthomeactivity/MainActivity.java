@@ -2,6 +2,7 @@ package com.example.cis350finalprojecthomeactivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,7 +16,14 @@ import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,8 +31,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     List<Post> allPosts;
     List<Post> filteredPosts;
+    Post newPost;
 
     int pageNum;
 
@@ -106,9 +117,18 @@ public class MainActivity extends AppCompatActivity {
         Set<String> tags = parseTags(tagsEditText.getText().toString());
 
         // make the new post and add it to all posts
-        Post newPost = new Post(newPostCategory, zip, newPostType, tags);
+        newPost = new Post(newPostCategory, zip, newPostType, tags);
         allPosts.add(allPosts.size(), newPost);
         filteredPosts.add(filteredPosts.size(), newPost);
+
+        try {
+            AsyncTask pushPost = new PushNewPost();
+            // pushPost.execute();
+            // String response = (String) pushPost.get();
+
+        } catch (Exception e) {
+            // this means the post was not properly pushed to Mongo
+        }
 
         // refresh page
         refreshPage();
@@ -311,7 +331,18 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private void initPosts() {
+
         allPosts = new ArrayList<Post>();
+
+        try {
+            AsyncTask pullPosts = new PullPostsFromDB();
+            pullPosts.execute();
+            pullPosts.get();
+        } catch (Exception e) {
+            // this means we didn't correctly pull posts from Mongo
+            Toast.makeText(this, "couldn't pull posts from Mongo :/", Toast.LENGTH_LONG);
+        }
+
     }
 
     private void displayPostInIdx(Post post, int idx) {
@@ -448,13 +479,87 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO: implement this
     private void pushPost(Post post) {
-        return;
+
+
+        // establish connection to http server
+
+
+        // package new post information in json format
+
+
+        // send http POST request to server
     }
 
     //TODO: implement this
     private List<Post> pullPosts() {
+
+        String url = "dummy/url";
+
+
+        // establish connection to http server
+
+
+        // send http GET request to server and get response
+
+
+        // unpack response into List<Post> instance and return
         return null;
     }
+
+    class PushNewPost extends AsyncTask<URL, String, String> {
+
+        @Override
+        protected String doInBackground(URL... urls) {
+
+            try {
+                URL url = urls[0];
+
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+
+                connect.setRequestMethod("POST");
+
+                // do more here
+
+                return "";
+
+            } catch (Exception e) {
+                return e.toString();
+            }
+
+        }
+    }
+
+    class PullPostsFromDB extends AsyncTask<URL, String, String> {
+
+        @Override
+        protected String doInBackground(URL... urls) {
+
+            try {
+                URL url = new URL("server/requestPosts");
+
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+
+                connect.setRequestMethod("GET");
+                connect.connect();
+
+                Scanner in = new Scanner(url.openStream());
+                String msg = in.nextLine();
+
+                JSONObject arrayOfPosts = new JSONObject(msg);
+
+                // turn arrayOfPosts into allPosts
+
+                return "";
+
+            } catch (IOException e) {
+                return e.toString();
+            } catch (JSONException e) {
+                return e.toString();
+            }
+        }
+
+    }
+
 
 
     /*
