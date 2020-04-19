@@ -86,6 +86,60 @@ router.post('/create', function(req, res) {
 
   });
 
+
+  // logout 
+  router.get('/logout', function(req,res) {
+    req.session.destroy((err) => {
+      if(err) {
+          return console.log(err);
+      }
+      res.redirect('/');
+    });
+  });
+
+
+  /********************** profile ***************************/
+
+  // get profile page
+  router.get('/profile', function(req,res) {
+    var email = sess.email;
+    var name = sess.fullname;
+    var recipient = sess.recipient;
+    if (email) {
+      console.log('Loading profile page');
+      res.render('profile.ejs', {nameMessage: name, emailMessage: email, accType: recipient}); 
+    }
+  });
+
+  // load profile pic 
+  router.get('/profilepic', function(req,res){
+    var email = sess.email;
+    accountdb.checkProfilePic(email, function(results,err) {
+        if (err) {
+          console.log('error saving'); 
+          res.send(err);
+        } else {
+          res.send(results);
+        }
+    });
+  });
+
+  // save profile pic 
+  router.post('/updateprofilepic', function(req,res) {
+    var link = req.body.profilepic;
+    var email = sess.email;
+
+    accountdb.changeProfilePic(email,link,function(results,err) {
+      if (err) {
+        console.log('error saving'); 
+        res.send({err});
+      } else {
+        console.log(' results ' + results);
+        res.send('success');
+      }
+    });
+  });
+
   // get editpage
 router.get('/edit', function (req, res) {
   console.log('Loading edit page');
@@ -149,27 +203,6 @@ router.get('/edit', function (req, res) {
           res.render('login.ejs', {message: null});
         }
       });
-    }
-  });
-
-  // logout 
-  router.get('/logout', function(req,res) {
-    req.session.destroy((err) => {
-      if(err) {
-          return console.log(err);
-      }
-      res.redirect('/');
-    });
-  });
-
-  //get profile page
-  router.get('/profile', function(req,res) {
-    var email = sess.email;
-    var name = sess.fullname;
-    var recipient = sess.recipient;
-    if (email) {
-      console.log('Loading profile page');
-      res.render('profile.ejs', {nameMessage: name, emailMessage: email, accType: recipient}); 
     }
   });
 

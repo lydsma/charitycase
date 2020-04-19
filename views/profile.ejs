@@ -45,18 +45,33 @@
                     //response = stringified JSON
                     //img url is now response.data.link
                     $.ajax(settings).done(function(response) {
-                        console.log(response);
                         var json = JSON.parse(response);
-                        console.log(json);
                         var link = json.data.link;
                         console.log(link);
-                        
                         $("img").attr("src",link);
-                        console.log('changed');
+                        console.log('changed prof pic');
+
+                        $.post('/account/updateprofilepic', {
+                            profilepic: link
+                        }, function(data){
+                            console.log(data);
+                        });
+
                     });
                 }
             });
         });
+
+        window.onload = function() {
+            $.get('/account/profilepic', function(data) {
+                console.log(data);
+                if (data != '') {
+                    $("img").attr("src",data);
+                } else {
+                    $("img").attr("src","https://www.searchpng.com/wp-content/uploads/2019/02/Deafult-Profile-Pitcher.png");
+                }
+            });
+        };
 
     </script>
 </head>
@@ -70,8 +85,8 @@
         <form action="/account/profile" method="post">
         <h4><b><i> Profile </i></b></h4>
         <span>
-            <img src="https://www.searchpng.com/wp-content/uploads/2019/02/Deafult-Profile-Pitcher.png" 
-            alt="ProfilePic" class="w3-border w3-padding" style="width:100%;max-width:150px">
+            <img src="" 
+            alt="ProfilePic" class="w3-border w3-padding" style="width:100%;max-width:200px">
             <p>
             </p>
             <p>

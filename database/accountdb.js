@@ -18,7 +18,8 @@ var accountSchema = new Schema({    //for login
 	name: String, 
     email: String,
     password: String,
-    recipient: Boolean
+    recipient: Boolean,
+    profilepic: String
 });
 
 accountSchema.methods.standardizeName = function() {
@@ -35,7 +36,8 @@ var createAccount_DB = function(nameInput, emailInput, passwordInput, accType, c
 		name: nameInput,
         email: emailInput,
         password: passwordInput,
-        recipient: accType
+        recipient: accType,
+        profilepic: ''
     });
 
     Account.findOne({email: emailInput}, (err, account) => {
@@ -105,6 +107,31 @@ var changePassword_DB = function(emailInput, pwInput, callback) {
     });
 };
 
+var checkProfilePic_DB = function(emailInput, callback) {
+    Account.findOne({email: emailInput}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('account dne', null);
+        } else {
+            callback(account.profilepic, null);
+        }
+    });
+};
+
+var changeProfilePic_DB = function(emailInput, newProfilePic, callback) {
+    Account.findOneAndUpdate({email: emailInput}, {profilepic: newProfilePic}, {new: true}, function (err, result) {
+        if (err) {
+            callback(null, err);
+        } else {
+            if (newProfilePic == result.profilepic) {
+                console.log('db ' + result.profilepic);
+                callback(result.profilepic,null);
+            };
+        }
+    });
+};
+
 var deleteAccount_DB = function(emailInput, callback) {
     Account.deleteOne({email: emailInput}, function(err) {
         if (err) {
@@ -122,6 +149,8 @@ var accountdb = {
     checkLogin: checkLogin_DB,
     changeName: changeName_DB,
     changePassword: changePassword_DB,
+    checkProfilePic: checkProfilePic_DB,
+    changeProfilePic: changeProfilePic_DB,
     deleteAccount: deleteAccount_DB
 }
 
