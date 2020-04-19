@@ -2,41 +2,38 @@ var createError = require('http-errors')
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var bodyParser = require('body-parser'); 
 
 // set up Express
 var express = require('express');
+var session = require('express-session'); 
 var app = express();
 
-// set up EJS
-app.set('view engine', 'ejs');
-
-// set up BodyParser
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
+app.set('view engine', 'ejs'); // set up EJS
 app.set('views', path.join(__dirname, 'views')); // view engine setup
+app.use(cookieParser()); 
+app.use(session({secret: "initializepls",saveUninitialized: true,resave: false,cookie: { secure: true }})); //initialize cookie session 
 app.use(logger('dev'));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')));
-
 /*************************************************/
-
+var sess; //global session var
 var accountRouter = require('./routes/accountRouter');
-
-//app.all('/', (req, res) => { res.redirect('/public/loginpage.html'); } );	when i fix login page
-app.all('/', (req, res) => { res.redirect('/public/personform.html'); } ); 
+var homeRouter = require('./routes/homeRouter');
 
 app.use('/public', express.static('public'));
+app.get('/', (req, res) => { res.render('login.ejs', {message: null}); } ); 
 
-// sign up and/or login 
+// sign up, login, current user routes
 app.use('/account', accountRouter);
 
-/**********************class ex code; delete later***************************/
+// home routes
+app.use('/home', homeRouter);
 
-// import the Person class from Person.js
-var Person = require('./database/Person.js');
+/**********************example code; delete later***************************/
 
 // route for showing all the people
 app.use('/all', (req, res) => {
@@ -104,37 +101,3 @@ app.use('/api', (req, res) => {
     });
 
 module.exports = app;
-
-app.listen(3000,  () => {
-	console.log('Listening on port 3000');
-	});
-
-/** 
- *
-
- * 
- * // server listener
-app.listen(3000,  () => {
-	console.log('Listening on port 3000');
-	});
-	
-  app.use('/', function(req, res, next) {
-  res.send('<strong>!!!!! success !!!!! </strong>');
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-}); */

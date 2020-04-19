@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/newpost_popup_background">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_blue_border"
+            android:gravity="center"
+            android:text="Configure post filter"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp"></TextView>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="\nChoose categories to include:"></TextView>
+
+                <CheckBox
+                    android:id="@+id/include_food"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Food" />
+
+                <CheckBox
+                    android:id="@+id/include_academic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Academic" />
+
+                <CheckBox
+                    android:id="@+id/include_clothing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Clothing" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="\nChoose post types to include:"></TextView>
+
+                <CheckBox
+                    android:id="@+id/seeking_donors"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Posts seeking donations" />
+
+                <CheckBox
+                    android:id="@+id/seeking_receipients"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Posts offering donations" />
+
+            </LinearLayout>
+
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="\nZip code filter"></TextView>
+
+                <RadioButton
+                    android:id="@+id/all_zip_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All zip codes"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+                <RadioButton
+                    android:id="@+id/one_zip_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Specific zip code (enter below)"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+                <EditText
+                    android:id="@+id/filter_zip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="zip code"></EditText>
+            </RadioGroup>
+
+        </LinearLayout>
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:onClick="onFilterConfirmClick"
+            android:text="Filter"></Button>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

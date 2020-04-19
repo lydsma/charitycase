@@ -1,0 +1,38 @@
+<!-- views/home.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ../views/partials/head %>
+</head>
+
+<body class="container">
+    <header>
+        <% include ../views/partials/header %>
+    </header>
+    <main>
+        <div>
+        <form action="/account/login" method="post">
+        <h4><b><i> Login </i></b></h4>
+        <p>
+        Email: <input name="email">
+        <p>
+        Password: <input type = "password" name="password">
+        <p>
+            <%if (message != null) { %>
+                <p><span style="color: red;"><%= message %></span></p>
+            <% } %>
+        <input type="submit" value="Login!">
+
+        </form>
+        </div>
+
+        <div class="div-signup">
+            <p></p>
+			<i><p id="signup"><font color="black"></font>Don't have an account? <a href="/account/signup">Sign up here!</a></p></i>	
+		</div>
+</main>
+</body>
+
+</html>

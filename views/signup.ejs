@@ -1,0 +1,42 @@
+<!-- views/signup.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ../views/partials/head %>
+</head>
+
+<body class="container">
+    <header>
+        <% include ../views/partials/header %>
+    </header>
+
+    <main>
+        <div>
+        <form action="/account/create" method="post">
+            <h4><b><i> Sign Up </i></b></h4>
+            <p>
+            Name: <input name="name">
+            <p>
+            Email: <input name="email">
+            <p>
+            Password: <input type = "password" name="password">
+            <p>
+            Recipient?: <input type="checkbox" name="checkAccType">
+            <p>
+                <%if (message != null) { %>
+                    <p><span style="color: red;"><%= message %></span></p>
+                <% } %>
+            <input type="submit" value="Create account!">
+            
+         </form>
+         </div>
+         <div class="div-login">
+             <p></p>
+			<i><p id="login">Return to login page <a href="/">here!</a></p></i>
+		</div>
+</main>
+</body>
+
+</html>

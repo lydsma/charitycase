@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#0D47A1"
+            android:text="$AppName$   \n HomeActivity"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="\n\n Welcome, $username$! \n\n"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/round_white_border">
+
+            <TextView
+                android:id="@+id/post1title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="This is a post"
+                android:textStyle="bold"
+                android:background="@drawable/round_blue_border"></TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/post1type"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Post type: "></TextView>
+
+                        <TextView
+                            android:id="@+id/post1category"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Post category: "></TextView>
+
+                        <TextView
+                            android:id="@+id/post1zip"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Zip code: "></TextView>
+
+                        <TextView
+                            android:id="@+id/post1tags"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Tags: "></TextView>
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+                <Button
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="See\nmore"
+                    android:layout_gravity="center"></Button>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/round_white_border">
+
+            <TextView
+                android:id="@+id/post2title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="This is a post"
+                android:textStyle="bold"
+                android:background="@drawable/round_blue_border"></TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/post2type"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Post type: "></TextView>
+
+                        <TextView
+                            android:id="@+id/post2category"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Post category: "></TextView>
+
+                        <TextView
+                            android:id="@+id/post2zip"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Zip code: "></TextView>
+
+                        <TextView
+                            android:id="@+id/post2tags"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Tags: "></TextView>
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+                <Button
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="See\nmore"
+                    android:layout_gravity="center"></Button>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/round_white_border">
+
+            <TextView
+                android:id="@+id/post3title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="This is a post"
+                android:textStyle="bold"
+                android:background="@drawable/round_blue_border"></TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/post3type"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Post type: "></TextView>
+
+                        <TextView
+                            android:id="@+id/post3category"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Post category: "></TextView>
+
+                        <TextView
+                            android:id="@+id/post3zip"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Zip code: "></TextView>
+
+                        <TextView
+                            android:id="@+id/post3tags"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:text="Tags: "></TextView>
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+                <Button
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="See\nmore"
+                    android:layout_gravity="center" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+
+            <Button
+                android:id="@+id/newPost"
+                android:layout_width="0dp"
+                android:layout_weight="0.25"
+                android:layout_height="wrap_content"
+                android:text="Create post"
+                android:onClick="onNewPostButtonClick"
+                />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:text="Search tags"
+                android:onClick="onSearchTagsClick" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:text="Filter posts"
+                android:onClick="onFilterClick" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.25"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:text="&lt;"
+                    android:layout_gravity="center"
+                    android:onClick="prevPageClick">
+                </Button>
+
+                <TextView
+                    android:id="@+id/pageNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" $n$ "
+                    android:layout_gravity="center">
+                </TextView>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:text="&gt;"
+                    android:onClick="nextPageClick"></Button>
+
+
+            </LinearLayout>
+
+
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
