@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -166,33 +167,53 @@ public class MainActivity extends AppCompatActivity {
         // get popup content
         View popupContent = popup.getContentView();
 
-        // Getting user input filter configuration
-        boolean includeAcademic =
-                ((CheckBox) popupContent.findViewById(R.id.include_academic)).isChecked();
-        boolean includeFood =
-                ((CheckBox) popupContent.findViewById(R.id.include_food)).isChecked();
-        boolean includeClothing =
-                ((CheckBox) popupContent.findViewById(R.id.include_clothing)).isChecked();
-        boolean includeGivers =
-                ((CheckBox) popupContent.findViewById(R.id.seeking_receipients)).isChecked();
-        boolean includeTakers =
-                ((CheckBox) popupContent.findViewById(R.id.seeking_donors)).isChecked();
+        filteredPosts = new ArrayList<Post>(allPosts);
+        List<Post> postsToRemove = new ArrayList<Post>();
 
-        // perform necessary filtering
-        filteredPosts = new ArrayList<Post>();
-        for (Post post : allPosts) {
-            boolean filterCategory = (includeAcademic && post.category == Category.EDUCATION) ||
-                    (includeFood && post.category == Category.FOOD) ||
-                    (includeClothing && post.category == Category.CLOTHING);
+        boolean filterCategory =
+                ((CheckBox) popupContent.findViewById(R.id.filter_category)).isChecked();
 
-            boolean filterType = (includeTakers && post.seekingDonations) ||
-                    (includeGivers && !post.seekingDonations);
+        boolean filterType =
+                ((CheckBox) popupContent.findViewById(R.id.filter_type)).isChecked();
 
-            boolean passesFilter = filterCategory && filterType;
+        if (filterCategory) {
+            boolean includeAcademic =
+                    ((CheckBox) popupContent.findViewById(R.id.include_academic)).isChecked();
+            boolean includeFood =
+                    ((CheckBox) popupContent.findViewById(R.id.include_food)).isChecked();
+            boolean includeClothing =
+                    ((CheckBox) popupContent.findViewById(R.id.include_clothing)).isChecked();
 
-            if (passesFilter) {
-                filteredPosts.add(filteredPosts.size(), post);
+            for (Post post : filteredPosts) {
+                boolean passesFilter = (includeAcademic && post.category == Category.EDUCATION) ||
+                        (includeFood && post.category == Category.FOOD) ||
+                        (includeClothing && post.category == Category.CLOTHING);
+                if (!passesFilter) {
+                    postsToRemove.add(post);
+                }
             }
+
+            filteredPosts.removeAll(postsToRemove);
+            postsToRemove = new ArrayList<Post>();
+        }
+
+
+        if (filterType) {
+            boolean includeGivers =
+                    ((CheckBox) popupContent.findViewById(R.id.seeking_receipients)).isChecked();
+            boolean includeTakers =
+                    ((CheckBox) popupContent.findViewById(R.id.seeking_donors)).isChecked();
+
+            for (Post post : filteredPosts) {
+                boolean passesFilter = (includeTakers && post.seekingDonations) ||
+                        (includeGivers && !post.seekingDonations);
+                if (!passesFilter) {
+                    postsToRemove.add(post);
+                }
+            }
+
+            filteredPosts.removeAll(postsToRemove);
+            postsToRemove = new ArrayList<Post>();
         }
 
         // set page num to 1 and refresh page
@@ -206,9 +227,23 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO: update for implementation of UpdatePost
     public void onPinPost(int postNum) {
-        Post postToPin = filteredPosts.get(pageNum * 3 + postNum - 1);
-        pinnedPosts.add(postToPin);
-        postToPin.likePost(userID);
+
+        int idx = pageNum * 3 + postNum - 1;
+        if (idx >= filteredPosts.size()) {
+            return;
+        }
+
+        Post postToPin = filteredPosts.get(idx);
+
+        if (postToPin.likes.contains(userID)) {
+            pinnedPosts.remove(postToPin);
+            postToPin.unlikePost(userID);
+        } else {
+            pinnedPosts.add(postToPin);
+            postToPin.likePost(userID);
+        }
+
+        displayPostInIdx(postToPin, postNum - 1);
 
         try {
 
@@ -355,6 +390,10 @@ public class MainActivity extends AppCompatActivity {
             likes.add(user);
         }
 
+        public void unlikePost(String user) { likes.remove(user); }
+
+        public int numPins() { return likes.size(); }
+
     }
 
 
@@ -400,12 +439,16 @@ public class MainActivity extends AppCompatActivity {
         int zipId = idNameToInt("post" + idxId + "zip");
         int typeId = idNameToInt("post" + idxId + "type");
         int tagsId = idNameToInt("post" + idxId + "tags");
+        int pinsId = idNameToInt("post" + idxId + "pins");
+        int pinButtonId = idNameToInt("post" + idxId + "pinbutton");
 
         TextView titleView = findViewById(titleId);
         TextView categoryView = findViewById(categoryId);
         TextView zipView = findViewById(zipId);
         TextView typeView = findViewById(typeId);
         TextView tagsView = findViewById(tagsId);
+        TextView pinsView = findViewById(pinsId);
+        Button pinButton = findViewById(pinButtonId);
 
         if (post.empty) {
             titleView.setText("No post to display");
@@ -413,6 +456,7 @@ public class MainActivity extends AppCompatActivity {
             zipView.setText("");
             typeView.setText("");
             tagsView.setText("");
+            pinsView.setText("");
         } else {
             String category = categoryToString.get(post.category);
             String zip = post.zipCode;
@@ -429,6 +473,24 @@ public class MainActivity extends AppCompatActivity {
             zipView.setText("Zip Code: " + zip);
             typeView.setText(seekingDonations);
             tagsView.setText("Tags: " + post.tagsString());
+
+            int numPins = post.numPins();
+            String pinText = "";
+            if (numPins == 0) {
+                pinText = "No users have pinned this post";
+            } else if (numPins == 1) {
+                pinText = "1 user has pinned this post";
+            } else {
+                pinText = numPins + " users have pinned this post";
+            }
+            pinsView.setText(pinText);
+
+            if (post.likes.contains(userID)) {
+                pinButton.setText("Unpin");
+            } else {
+                pinButton.setText("Pin");
+            }
+
         }
 
     }

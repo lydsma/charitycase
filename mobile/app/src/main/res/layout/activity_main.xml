@@ -95,13 +95,31 @@
 
                 </LinearLayout>
 
-                <Button
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
+                <LinearLayout
                     android:layout_width="0dp"
-                    android:text="Pin post"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    >
+
+                    <Button
+                        android:id="@+id/post1pinbutton"
+                        android:layout_height="wrap_content"
+                        android:text="Pin post"
+                        android:layout_gravity="center"
+                        android:onClick="pinPost1"
+                        android:layout_width="wrap_content"></Button>
+
+                    <TextView
+                    android:id="@+id/post1pins"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:onClick="pinPost1"></Button>
+                    android:text="Pinned by $x$ users"></TextView>
+
+                </LinearLayout>
+
+
 
 
             </LinearLayout>
@@ -171,13 +189,29 @@
 
                 </LinearLayout>
 
-                <Button
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
+                <LinearLayout
                     android:layout_width="0dp"
-                    android:text="pin post"
-                    android:layout_gravity="center"
-                    android:onClick="pinPost2"></Button>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    >
+
+                    <Button
+                        android:id="@+id/post2pinbutton"
+                        android:layout_height="wrap_content"
+                        android:text="Pin post"
+                        android:layout_gravity="center"
+                        android:onClick="pinPost2"
+                        android:layout_width="wrap_content"></Button>
+
+                    <TextView
+                        android:id="@+id/post2pins"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Pinned by $x$ users"></TextView>
+
+                </LinearLayout>
 
 
             </LinearLayout>
@@ -247,13 +281,29 @@
 
                 </LinearLayout>
 
-                <Button
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
+                <LinearLayout
                     android:layout_width="0dp"
-                    android:text="pin post"
-                    android:layout_gravity="center"
-                    android:onClick="pinPost3"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    >
+
+                    <Button
+                        android:id="@+id/post3pinbutton"
+                        android:layout_height="wrap_content"
+                        android:text="Pin post"
+                        android:layout_gravity="center"
+                        android:onClick="pinPost3"
+                        android:layout_width="wrap_content"></Button>
+
+                    <TextView
+                        android:id="@+id/post3pins"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Pinned by $x$ users"></TextView>
+
+                </LinearLayout>
 
 
             </LinearLayout>
