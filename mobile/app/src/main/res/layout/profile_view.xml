@@ -61,7 +61,7 @@
         android:layout_marginEnd="12dp"
         android:layout_marginRight="12dp"
         android:background="#BBDEFB"
-        android:text="Donor / Recipient:"
+        android:text="User Type:"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5"></TextView>
@@ -135,7 +135,7 @@
         android:layout_height="wrap_content"
         android:background="#004B55"
 
-        android:text="$AppName$   \n ProfileActivity"
+        android:text="CharityCase   \n ProfileActivity"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"

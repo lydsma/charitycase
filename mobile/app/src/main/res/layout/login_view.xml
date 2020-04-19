@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:background="#004B55"
 
-        android:text="$AppName$   \n LoginActivity"
+        android:text="CharityCase   \n LoginActivity"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
