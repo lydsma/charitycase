@@ -2,6 +2,7 @@ package com.example.cis350finalprojecthomeactivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,15 +13,29 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     List<Post> allPosts;
     List<Post> filteredPosts;
+    Post newPost;
 
     int pageNum;
 
@@ -37,25 +53,33 @@ public class MainActivity extends AppCompatActivity {
 
     Map<Category, String> categoryToString;
 
+    Set<Post> pinnedPosts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // set up instance variables
-        pageNum = 0;
-        allPosts = new ArrayList<Post>();
-        filteredPosts = new ArrayList<Post>();
-        categoryToString = new HashMap<Category, String>();
+        // get user ID
+        userID = "";
 
-        // set up map
+        // start on page 0
+        pageNum = 0;
+
+        // set up map to link enum category to string representation
+        categoryToString = new HashMap<Category, String>();
         setUpCategoryToString();
 
-        // work with dummy posts for now (until we connect to database)
+        // set up post collections and add dummy posts for now (until we connect to database)
+        allPosts = new ArrayList<Post>();
+        filteredPosts = new ArrayList<Post>();
         addDummyPosts();
 
-        // Refresh directory of posts
+        // refresh displayed posts on page
         refreshPage();
+
+        // init pinnedPosts, eventually we will pull this from Mongo
+        pinnedPosts = new HashSet<Post>();
     }
 
 
@@ -98,11 +122,22 @@ public class MainActivity extends AppCompatActivity {
         View popupContent = popup.getContentView();
         EditText zipEditText = (EditText) popupContent.findViewById(R.id.popup_address_content);
         String zip = zipEditText.getText().toString();
+        EditText tagsEditText = (EditText) popupContent.findViewById(R.id.popup_tags_content);
+        Set<String> tags = parseTags(tagsEditText.getText().toString());
 
         // make the new post and add it to all posts
-        Post newPost = new Post(newPostCategory, zip, newPostType);
+        newPost = new Post(newPostCategory, zip, newPostType, tags);
         allPosts.add(allPosts.size(), newPost);
         filteredPosts.add(filteredPosts.size(), newPost);
+
+        try {
+            AsyncTask pushPost = new PushNewPost();
+            // pushPost.execute();
+            // String response = (String) pushPost.get();
+
+        } catch (Exception e) {
+            // this means the post was not properly pushed to Mongo
+        }
 
         // refresh page
         refreshPage();
@@ -111,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
         popup.dismiss();
     }
 
-    // @ TODO implement this, it might make sense to also have a button for sort (+spinner)
     public void onFilterClick(View view) {
 
         // Set up popup
@@ -126,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // @TODO implement this, submits a filter
+    //TODO: add in zip code filtering
     public void onFilterConfirmClick(View view) {
 
         // get popup content
@@ -170,13 +204,89 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // @TODO implement this, it should pull posts from Mongo and write them to appPosts
-    public void refreshButtonClick(View view) {
+    //TODO: update for implementation of UpdatePost
+    public void onPinPost(int postNum) {
+        Post postToPin = filteredPosts.get(pageNum * 3 + postNum - 1);
+        pinnedPosts.add(postToPin);
+        postToPin.likePost(userID);
+
+        try {
+
+            AsyncTask updatePost = new UpdatePost();
+            updatePost.execute();
+            updatePost.get();
+
+        } catch (Exception e) {
+            // oops!
+        }
+    }
+
+    public void pinPost1(View view) {
+        onPinPost(1);
+    }
+
+    public void pinPost2(View view) {
+        onPinPost(2);
+    }
+
+    public void pinPost3(View view) {
+        onPinPost(3);
+    }
+
+    public void onSearchTagsClick(View view) {
+
+        // Set up popup
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.tags_popup, null);
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        popup = new PopupWindow(popupView, width, height, true);
+
+        // Launch popup
+        popup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    public void onSearchConfirmClick(View view) {
+
+        // get popup content
+        View popupContent = popup.getContentView();
+
+        // Getting user input filter configuration
+        boolean strictSearch =
+                ((RadioButton) popupContent.findViewById(R.id.allTagMatch)).isChecked();
+
+        EditText inputTagsEditText = (EditText) popupContent.findViewById(R.id.search_tags);
+
+        Set<String> searchTags = parseTags(inputTagsEditText.getText().toString());
+
+        // run search
+        filteredPosts = new ArrayList<Post>();
+
+        if (strictSearch) {
+            for (Post post : allPosts) {
+                if (post.tags().containsAll(searchTags)) {
+                    filteredPosts.add(filteredPosts.size(), post);
+                }
+            }
+        } else {
+            for (Post post : allPosts) {
+                if (!Collections.disjoint(post.tags(), searchTags)) {
+                    filteredPosts.add(filteredPosts.size(), post);
+                }
+            }
+        }
+
+        // set page num to 1 and refresh page
+        pageNum = 0;
+        refreshPage();
+
+        // dismiss popup
+        popup.dismiss();
 
     }
 
     public void nextPageClick(View view) {
-        if (pageNum * 4 + 4 < filteredPosts.size()) {
+        if (pageNum * 3 + 3 < filteredPosts.size()) {
             pageNum++;
         }
 
@@ -202,7 +312,8 @@ public class MainActivity extends AppCompatActivity {
         Category category;
         String zipCode;
         boolean seekingDonations;
-        List<String> likes;
+        Set<String> likes;
+        Set<String> tags;
         boolean empty;
 
         // represents empty post, can't have a final static instance bc it's an inner class
@@ -210,12 +321,38 @@ public class MainActivity extends AppCompatActivity {
             empty = true;
         }
 
-        public Post(Category cat, String zip, boolean type) {
+        public Post(Category cat, String zip, boolean type, Set<String> tgs) {
             empty = false;
             this.category = cat;
             this.zipCode = zip;
             this.seekingDonations = type;
-            this.likes = new ArrayList<String>();
+            this.likes = new TreeSet<String>();
+            this.tags = tgs;
+        }
+
+        public String tagsString() {
+            if (this.tags == null || this.tags.size() == 0) {
+                return "";
+            } else {
+                String out = "";
+                for (String s : this.tags) {
+                    out += "#" + s + " ";
+                }
+
+                return out.substring(0, out.length() - 1);
+            }
+        }
+
+        public Set<String> tags() {
+            if (this.tags == null) {
+                return new TreeSet<String>();
+            } else {
+                return this.tags;
+            }
+        }
+
+        public void likePost(String user) {
+            likes.add(user);
         }
 
     }
@@ -230,7 +367,18 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private void initPosts() {
+
         allPosts = new ArrayList<Post>();
+
+        try {
+            AsyncTask pullPosts = new PullPostsFromDB();
+            pullPosts.execute();
+            pullPosts.get();
+        } catch (Exception e) {
+            // this means we didn't correctly pull posts from Mongo
+            Toast.makeText(this, "couldn't pull posts from Mongo :/", Toast.LENGTH_LONG);
+        }
+
     }
 
     private void displayPostInIdx(Post post, int idx) {
@@ -239,8 +387,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if (idx > 3) {
-            idx = 3;
+        if (idx > 2) {
+            idx = 2;
         } else if (idx < 0) {
             idx = 0;
         }
@@ -251,17 +399,20 @@ public class MainActivity extends AppCompatActivity {
         int categoryId = idNameToInt("post" + idxId + "category");
         int zipId = idNameToInt("post" + idxId + "zip");
         int typeId = idNameToInt("post" + idxId + "type");
+        int tagsId = idNameToInt("post" + idxId + "tags");
 
         TextView titleView = findViewById(titleId);
         TextView categoryView = findViewById(categoryId);
         TextView zipView = findViewById(zipId);
         TextView typeView = findViewById(typeId);
+        TextView tagsView = findViewById(tagsId);
 
         if (post.empty) {
             titleView.setText("No post to display");
             categoryView.setText("");
             zipView.setText("");
             typeView.setText("");
+            tagsView.setText("");
         } else {
             String category = categoryToString.get(post.category);
             String zip = post.zipCode;
@@ -275,19 +426,20 @@ public class MainActivity extends AppCompatActivity {
 
             titleView.setText("Post " + (idx + 1));
             categoryView.setText(category);
-            zipView.setText(zip);
+            zipView.setText("Zip Code: " + zip);
             typeView.setText(seekingDonations);
+            tagsView.setText("Tags: " + post.tagsString());
         }
 
     }
 
     private void refreshPage() {
 
-        for (int i = pageNum * 4; i < (pageNum * 4) + 4; i++) {
+        for (int i = pageNum * 3; i < (pageNum * 3) + 3; i++) {
             if (i < filteredPosts.size()) {
-                displayPostInIdx(filteredPosts.get(i), i - (pageNum * 4));
+                displayPostInIdx(filteredPosts.get(i), i - (pageNum * 3));
             } else {
-                displayPostInIdx(new Post(), i - (pageNum * 4));
+                displayPostInIdx(new Post(), i - (pageNum * 3));
             }
 
         }
@@ -323,13 +475,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addDummyPosts() {
-        allPosts.add(0, new Post(Category.EDUCATION, "19104", true));
-        allPosts.add(1, new Post(Category.FOOD, "19111", false));
-        allPosts.add(2, new Post(Category.CLOTHING, "19210", false));
+        allPosts.add(0, new Post(Category.EDUCATION, "19104", true, null));
+        allPosts.add(1, new Post(Category.FOOD, "19111", false, null));
+        allPosts.add(2, new Post(Category.CLOTHING, "19210", false, null));
 
         for (Post post : allPosts) {
             filteredPosts.add(filteredPosts.size(), post);
         }
+    }
+
+    /*
+    ~~~~~~~~~~~~~~~  OTHER FUNCTIONS  ~~~~~~~~~~~~~~~
+    - parseTags
+    -
+     */
+
+    private Set<String> parseTags(String textInput) {
+        if (textInput == null) {
+            return new TreeSet<String>();
+        }
+
+        List<String> tags = Arrays.asList(textInput.toLowerCase().split(",| "));
+
+        Set<String> out = new TreeSet<String>();
+        for (String s : tags) {
+            if (s.length() > 0) {
+                out.add(s);
+            }
+        }
+
+        return out;
     }
 
     /*
@@ -340,13 +515,106 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO: implement this
     private void pushPost(Post post) {
-        return;
+
+
+        // establish connection to http server
+
+
+        // package new post information in json format
+
+
+        // send http POST request to server
     }
 
     //TODO: implement this
     private List<Post> pullPosts() {
+
+        String url = "dummy/url";
+
+
+        // establish connection to http server
+
+
+        // send http GET request to server and get response
+
+
+        // unpack response into List<Post> instance and return
         return null;
     }
+
+    class PushNewPost extends AsyncTask<URL, String, String> {
+
+        @Override
+        protected String doInBackground(URL... urls) {
+
+            try {
+                URL url = urls[0];
+
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+
+                connect.setRequestMethod("POST");
+
+                // do more here
+
+                return "";
+
+            } catch (Exception e) {
+                return e.toString();
+            }
+
+        }
+    }
+
+    class UpdatePost extends AsyncTask<Object, String, String> {
+
+        @Override
+        protected String doInBackground(Object... objects) {
+            try {
+                URL url = new URL("server/updatePost");
+
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+
+                connect.setRequestMethod("POST");
+                connect.connect();
+
+                return "";
+            } catch (Exception e) {
+                return e.toString();
+            }
+        }
+    }
+
+    class PullPostsFromDB extends AsyncTask<URL, String, String> {
+
+        @Override
+        protected String doInBackground(URL... urls) {
+
+            try {
+                URL url = new URL("server/requestPosts");
+
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+
+                connect.setRequestMethod("GET");
+                connect.connect();
+
+                Scanner in = new Scanner(url.openStream());
+                String msg = in.nextLine();
+
+                JSONObject arrayOfPosts = new JSONObject(msg);
+
+                // turn arrayOfPosts into allPosts
+
+                return "";
+
+            } catch (IOException e) {
+                return e.toString();
+            } catch (JSONException e) {
+                return e.toString();
+            }
+        }
+
+    }
+
 
 
     /*
