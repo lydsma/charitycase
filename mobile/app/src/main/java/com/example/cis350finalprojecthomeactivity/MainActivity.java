@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -52,25 +53,33 @@ public class MainActivity extends AppCompatActivity {
 
     Map<Category, String> categoryToString;
 
+    Set<Post> pinnedPosts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // set up instance variables
-        pageNum = 0;
-        allPosts = new ArrayList<Post>();
-        filteredPosts = new ArrayList<Post>();
-        categoryToString = new HashMap<Category, String>();
+        // get user ID
+        userID = "";
 
-        // set up map
+        // start on page 0
+        pageNum = 0;
+
+        // set up map to link enum category to string representation
+        categoryToString = new HashMap<Category, String>();
         setUpCategoryToString();
 
-        // work with dummy posts for now (until we connect to database)
+        // set up post collections and add dummy posts for now (until we connect to database)
+        allPosts = new ArrayList<Post>();
+        filteredPosts = new ArrayList<Post>();
         addDummyPosts();
 
-        // Refresh directory of posts
+        // refresh displayed posts on page
         refreshPage();
+
+        // init pinnedPosts, eventually we will pull this from Mongo
+        pinnedPosts = new HashSet<Post>();
     }
 
 
@@ -137,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
         popup.dismiss();
     }
 
-    // @ TODO implement this, it might make sense to also have a button for sort (+spinner)
     public void onFilterClick(View view) {
 
         // Set up popup
@@ -152,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // @TODO implement this, submits a filter
+    //TODO: add in zip code filtering
     public void onFilterConfirmClick(View view) {
 
         // get popup content
@@ -194,6 +202,35 @@ public class MainActivity extends AppCompatActivity {
         // dismiss popup
         popup.dismiss();
 
+    }
+
+    //TODO: update for implementation of UpdatePost
+    public void onPinPost(int postNum) {
+        Post postToPin = filteredPosts.get(pageNum * 3 + postNum - 1);
+        pinnedPosts.add(postToPin);
+        postToPin.likePost(userID);
+
+        try {
+
+            AsyncTask updatePost = new UpdatePost();
+            updatePost.execute();
+            updatePost.get();
+
+        } catch (Exception e) {
+            // oops!
+        }
+    }
+
+    public void pinPost1(View view) {
+        onPinPost(1);
+    }
+
+    public void pinPost2(View view) {
+        onPinPost(2);
+    }
+
+    public void pinPost3(View view) {
+        onPinPost(3);
     }
 
     public void onSearchTagsClick(View view) {
@@ -248,11 +285,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // @TODO implement this, it should pull posts from Mongo and write them to appPosts
-    public void refreshButtonClick(View view) {
-
-    }
-
     public void nextPageClick(View view) {
         if (pageNum * 3 + 3 < filteredPosts.size()) {
             pageNum++;
@@ -280,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
         Category category;
         String zipCode;
         boolean seekingDonations;
-        List<String> likes;
+        Set<String> likes;
         Set<String> tags;
         boolean empty;
 
@@ -294,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
             this.category = cat;
             this.zipCode = zip;
             this.seekingDonations = type;
-            this.likes = new ArrayList<String>();
+            this.likes = new TreeSet<String>();
             this.tags = tgs;
         }
 
@@ -317,6 +349,10 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 return this.tags;
             }
+        }
+
+        public void likePost(String user) {
+            likes.add(user);
         }
 
     }
@@ -526,6 +562,25 @@ public class MainActivity extends AppCompatActivity {
                 return e.toString();
             }
 
+        }
+    }
+
+    class UpdatePost extends AsyncTask<Object, String, String> {
+
+        @Override
+        protected String doInBackground(Object... objects) {
+            try {
+                URL url = new URL("server/updatePost");
+
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+
+                connect.setRequestMethod("POST");
+                connect.connect();
+
+                return "";
+            } catch (Exception e) {
+                return e.toString();
+            }
         }
     }
 

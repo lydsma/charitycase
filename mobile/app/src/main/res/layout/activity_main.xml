@@ -99,8 +99,9 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
-                    android:text="See\nmore"
-                    android:layout_gravity="center"></Button>
+                    android:text="Pin post"
+                    android:layout_gravity="center"
+                    android:onClick="pinPost1"></Button>
 
 
             </LinearLayout>
@@ -174,8 +175,9 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
-                    android:text="See\nmore"
-                    android:layout_gravity="center"></Button>
+                    android:text="pin post"
+                    android:layout_gravity="center"
+                    android:onClick="pinPost2"></Button>
 
 
             </LinearLayout>
@@ -249,8 +251,9 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
-                    android:text="See\nmore"
-                    android:layout_gravity="center" />
+                    android:text="pin post"
+                    android:layout_gravity="center"
+                    android:onClick="pinPost3"/>
 
 
             </LinearLayout>
