@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -321,11 +322,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void nextPageClick(View view) {
+        /*
         if (pageNum * 3 + 3 < filteredPosts.size()) {
             pageNum++;
         }
 
-        refreshPage();
+        refreshPage(); */
+        try {
+            URL url = new URL("http://localhost:3000/routes/homeRouter/getallposts");
+            AsyncTask<URL, String, String> task = new PullPostsFromDB();
+            task.execute(url);
+            String name = task.get();
+            Toast.makeText(this, name, Toast.LENGTH_LONG).show();
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void prevPageClick(View view) {
@@ -652,7 +670,7 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(URL... urls) {
 
             try {
-                URL url = new URL("server/requestPosts");
+                URL url = new URL("http://10.0.2.2:3000/routes/homeRouter/getallposts");
 
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 
@@ -666,7 +684,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // turn arrayOfPosts into allPosts
 
-                return "";
+                return msg;
 
             } catch (IOException e) {
                 return e.toString();

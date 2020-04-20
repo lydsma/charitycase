@@ -12,6 +12,7 @@
         android:layout_height="48dp"
         android:layout_marginBottom="20dp"
         android:background="#3F8CB5"
+        android:onClick="onSubmitButtonClick"
         android:text="@string/sign_up"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -174,6 +175,7 @@
         android:id="@+id/backButton"
         android:layout_width="126dp"
         android:layout_height="42dp"
+        android:onClick="onBackButtonClick"
         android:text="Back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView12" />

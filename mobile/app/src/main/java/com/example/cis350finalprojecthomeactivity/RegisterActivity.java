@@ -81,4 +81,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         startActivity(i);
     }
+
+    public void onBackButtonClick(View v) {
+        Intent i = new Intent(this, LoginActivity.class);
+        startActivity(i);
+    }
 }
