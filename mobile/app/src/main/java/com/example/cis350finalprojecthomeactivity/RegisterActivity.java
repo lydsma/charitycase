@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -30,6 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText em;
     private EditText pass;
     private List<User> allUsers;
+    private HashSet<String> allEmails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +92,22 @@ public class RegisterActivity extends AppCompatActivity {
 
         String fullName = firstName + " " + lastName;
 
-        i.putExtra(EMAIL, userEmail);
+        allUsers = new ArrayList<User>();
+        allEmails = new HashSet<String>();
 
-        startActivity(i);
+        for (User user : allUsers) {
+            allEmails.add(user.email);
+        }
+
+        if (allEmails.contains(userEmail)) {
+            Toast.makeText(this, "Account is already registered with that email.\n Try again.", Toast.LENGTH_LONG);
+        } else {
+            //create new account, launch mainActivity
+            Toast.makeText(this, "Registration successful", Toast.LENGTH_LONG);
+            i.putExtra(EMAIL, userEmail);
+
+            startActivity(i);
+        }
     }
 
     public void onBackButtonClick(View v) {
