@@ -15,6 +15,7 @@ import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
+    public static final String EMAIL = "EMAIL";
     private EditText em;
     private EditText pass;
     private List<LoginActivity.User> allUsersArray;
@@ -52,8 +53,16 @@ public class LoginActivity extends AppCompatActivity {
         if (allEmails.contains(email)) {
             User temp = allUsers.get(email);
             // valid email
+            if (temp.password.equals(password)) {
+                // valid login, go to home
+                Intent i = new Intent(this, MainActivity.class);
+                i.putExtra(EMAIL, temp.email);
+                startActivity(i);
+            } else {
+                Toast.makeText(this, "Incorrect Email or Password.\nTry again", Toast.LENGTH_LONG);
+            }
         } else {
-            Toast.makeText(this, "Incorrect Email or Password.\nTry again", Toast.LENGTH_LONG);
+            Toast.makeText(this, "No account found with this email.\nTry again", Toast.LENGTH_LONG);
         }
     }
 
