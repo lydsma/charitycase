@@ -25,14 +25,18 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="@drawable/round_white_border">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <CheckBox
+                    android:id="@+id/filter_category"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="\nChoose categories to include:"></TextView>
+                    android:text="Filter category"
+                    android:textStyle="bold"
+                    android:background="@drawable/round_blue_border"></CheckBox>
 
                 <CheckBox
                     android:id="@+id/include_food"
@@ -57,12 +61,16 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="@drawable/round_white_border">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <CheckBox
+                    android:id="@+id/filter_type"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="\nChoose post types to include:"></TextView>
+                    android:text="Filter type"
+                    android:background="@drawable/round_blue_border"
+                    android:textStyle="bold"></CheckBox>
 
                 <CheckBox
                     android:id="@+id/seeking_donors"
@@ -82,12 +90,16 @@
             <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="@drawable/round_white_border">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="\nZip code filter"></TextView>
+                    android:text="Zip code filter"
+                    android:background="@drawable/round_blue_border"
+                    android:textStyle="bold"
+                    android:textColor="#000000"></TextView>
 
                 <RadioButton
                     android:id="@+id/all_zip_radio"
@@ -109,6 +121,35 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="zip code"></EditText>
+            </RadioGroup>
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/round_white_border">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pinned post filter"
+                    android:background="@drawable/round_blue_border"
+                    android:textStyle="bold"
+                    android:textColor="#000000"></TextView>
+
+                <RadioButton
+                    android:id="@+id/all_post_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All posts"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+                <RadioButton
+                    android:id="@+id/pinned_post_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Only pinned posts"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
             </RadioGroup>
 
         </LinearLayout>

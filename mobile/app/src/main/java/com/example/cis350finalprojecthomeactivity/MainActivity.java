@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -29,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -52,25 +54,33 @@ public class MainActivity extends AppCompatActivity {
 
     Map<Category, String> categoryToString;
 
+    Set<Post> pinnedPosts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // set up instance variables
-        pageNum = 0;
-        allPosts = new ArrayList<Post>();
-        filteredPosts = new ArrayList<Post>();
-        categoryToString = new HashMap<Category, String>();
+        // get user ID
+        userID = "";
 
-        // set up map
+        // start on page 0
+        pageNum = 0;
+
+        // set up map to link enum category to string representation
+        categoryToString = new HashMap<Category, String>();
         setUpCategoryToString();
 
-        // work with dummy posts for now (until we connect to database)
+        // set up post collections and add dummy posts for now (until we connect to database)
+        allPosts = new ArrayList<Post>();
+        filteredPosts = new ArrayList<Post>();
         addDummyPosts();
 
-        // Refresh directory of posts
+        // refresh displayed posts on page
         refreshPage();
+
+        // init pinnedPosts, eventually we will pull this from Mongo
+        pinnedPosts = new HashSet<Post>();
     }
 
 
@@ -137,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
         popup.dismiss();
     }
 
-    // @ TODO implement this, it might make sense to also have a button for sort (+spinner)
     public void onFilterClick(View view) {
 
         // Set up popup
@@ -152,39 +161,59 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // @TODO implement this, submits a filter
+    //TODO: add in zip code filtering
     public void onFilterConfirmClick(View view) {
 
         // get popup content
         View popupContent = popup.getContentView();
 
-        // Getting user input filter configuration
-        boolean includeAcademic =
-                ((CheckBox) popupContent.findViewById(R.id.include_academic)).isChecked();
-        boolean includeFood =
-                ((CheckBox) popupContent.findViewById(R.id.include_food)).isChecked();
-        boolean includeClothing =
-                ((CheckBox) popupContent.findViewById(R.id.include_clothing)).isChecked();
-        boolean includeGivers =
-                ((CheckBox) popupContent.findViewById(R.id.seeking_receipients)).isChecked();
-        boolean includeTakers =
-                ((CheckBox) popupContent.findViewById(R.id.seeking_donors)).isChecked();
+        filteredPosts = new ArrayList<Post>(allPosts);
+        List<Post> postsToRemove = new ArrayList<Post>();
 
-        // perform necessary filtering
-        filteredPosts = new ArrayList<Post>();
-        for (Post post : allPosts) {
-            boolean filterCategory = (includeAcademic && post.category == Category.EDUCATION) ||
-                    (includeFood && post.category == Category.FOOD) ||
-                    (includeClothing && post.category == Category.CLOTHING);
+        boolean filterCategory =
+                ((CheckBox) popupContent.findViewById(R.id.filter_category)).isChecked();
 
-            boolean filterType = (includeTakers && post.seekingDonations) ||
-                    (includeGivers && !post.seekingDonations);
+        boolean filterType =
+                ((CheckBox) popupContent.findViewById(R.id.filter_type)).isChecked();
 
-            boolean passesFilter = filterCategory && filterType;
+        if (filterCategory) {
+            boolean includeAcademic =
+                    ((CheckBox) popupContent.findViewById(R.id.include_academic)).isChecked();
+            boolean includeFood =
+                    ((CheckBox) popupContent.findViewById(R.id.include_food)).isChecked();
+            boolean includeClothing =
+                    ((CheckBox) popupContent.findViewById(R.id.include_clothing)).isChecked();
 
-            if (passesFilter) {
-                filteredPosts.add(filteredPosts.size(), post);
+            for (Post post : filteredPosts) {
+                boolean passesFilter = (includeAcademic && post.category == Category.EDUCATION) ||
+                        (includeFood && post.category == Category.FOOD) ||
+                        (includeClothing && post.category == Category.CLOTHING);
+                if (!passesFilter) {
+                    postsToRemove.add(post);
+                }
             }
+
+            filteredPosts.removeAll(postsToRemove);
+            postsToRemove = new ArrayList<Post>();
+        }
+
+
+        if (filterType) {
+            boolean includeGivers =
+                    ((CheckBox) popupContent.findViewById(R.id.seeking_receipients)).isChecked();
+            boolean includeTakers =
+                    ((CheckBox) popupContent.findViewById(R.id.seeking_donors)).isChecked();
+
+            for (Post post : filteredPosts) {
+                boolean passesFilter = (includeTakers && post.seekingDonations) ||
+                        (includeGivers && !post.seekingDonations);
+                if (!passesFilter) {
+                    postsToRemove.add(post);
+                }
+            }
+
+            filteredPosts.removeAll(postsToRemove);
+            postsToRemove = new ArrayList<Post>();
         }
 
         // set page num to 1 and refresh page
@@ -194,6 +223,49 @@ public class MainActivity extends AppCompatActivity {
         // dismiss popup
         popup.dismiss();
 
+    }
+
+    //TODO: update for implementation of UpdatePost
+    public void onPinPost(int postNum) {
+
+        int idx = pageNum * 3 + postNum - 1;
+        if (idx >= filteredPosts.size()) {
+            return;
+        }
+
+        Post postToPin = filteredPosts.get(idx);
+
+        if (postToPin.likes.contains(userID)) {
+            pinnedPosts.remove(postToPin);
+            postToPin.unlikePost(userID);
+        } else {
+            pinnedPosts.add(postToPin);
+            postToPin.likePost(userID);
+        }
+
+        displayPostInIdx(postToPin, postNum - 1);
+
+        try {
+
+            AsyncTask updatePost = new UpdatePost();
+            updatePost.execute();
+            updatePost.get();
+
+        } catch (Exception e) {
+            // oops!
+        }
+    }
+
+    public void pinPost1(View view) {
+        onPinPost(1);
+    }
+
+    public void pinPost2(View view) {
+        onPinPost(2);
+    }
+
+    public void pinPost3(View view) {
+        onPinPost(3);
     }
 
     public void onSearchTagsClick(View view) {
@@ -248,11 +320,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // @TODO implement this, it should pull posts from Mongo and write them to appPosts
-    public void refreshButtonClick(View view) {
-
-    }
-
     public void nextPageClick(View view) {
         if (pageNum * 3 + 3 < filteredPosts.size()) {
             pageNum++;
@@ -280,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
         Category category;
         String zipCode;
         boolean seekingDonations;
-        List<String> likes;
+        Set<String> likes;
         Set<String> tags;
         boolean empty;
 
@@ -294,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
             this.category = cat;
             this.zipCode = zip;
             this.seekingDonations = type;
-            this.likes = new ArrayList<String>();
+            this.likes = new TreeSet<String>();
             this.tags = tgs;
         }
 
@@ -318,6 +385,14 @@ public class MainActivity extends AppCompatActivity {
                 return this.tags;
             }
         }
+
+        public void likePost(String user) {
+            likes.add(user);
+        }
+
+        public void unlikePost(String user) { likes.remove(user); }
+
+        public int numPins() { return likes.size(); }
 
     }
 
@@ -364,12 +439,16 @@ public class MainActivity extends AppCompatActivity {
         int zipId = idNameToInt("post" + idxId + "zip");
         int typeId = idNameToInt("post" + idxId + "type");
         int tagsId = idNameToInt("post" + idxId + "tags");
+        int pinsId = idNameToInt("post" + idxId + "pins");
+        int pinButtonId = idNameToInt("post" + idxId + "pinbutton");
 
         TextView titleView = findViewById(titleId);
         TextView categoryView = findViewById(categoryId);
         TextView zipView = findViewById(zipId);
         TextView typeView = findViewById(typeId);
         TextView tagsView = findViewById(tagsId);
+        TextView pinsView = findViewById(pinsId);
+        Button pinButton = findViewById(pinButtonId);
 
         if (post.empty) {
             titleView.setText("No post to display");
@@ -377,6 +456,7 @@ public class MainActivity extends AppCompatActivity {
             zipView.setText("");
             typeView.setText("");
             tagsView.setText("");
+            pinsView.setText("");
         } else {
             String category = categoryToString.get(post.category);
             String zip = post.zipCode;
@@ -393,6 +473,24 @@ public class MainActivity extends AppCompatActivity {
             zipView.setText("Zip Code: " + zip);
             typeView.setText(seekingDonations);
             tagsView.setText("Tags: " + post.tagsString());
+
+            int numPins = post.numPins();
+            String pinText = "";
+            if (numPins == 0) {
+                pinText = "No users have pinned this post";
+            } else if (numPins == 1) {
+                pinText = "1 user has pinned this post";
+            } else {
+                pinText = numPins + " users have pinned this post";
+            }
+            pinsView.setText(pinText);
+
+            if (post.likes.contains(userID)) {
+                pinButton.setText("Unpin");
+            } else {
+                pinButton.setText("Pin");
+            }
+
         }
 
     }
@@ -526,6 +624,25 @@ public class MainActivity extends AppCompatActivity {
                 return e.toString();
             }
 
+        }
+    }
+
+    class UpdatePost extends AsyncTask<Object, String, String> {
+
+        @Override
+        protected String doInBackground(Object... objects) {
+            try {
+                URL url = new URL("server/updatePost");
+
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+
+                connect.setRequestMethod("POST");
+                connect.connect();
+
+                return "";
+            } catch (Exception e) {
+                return e.toString();
+            }
         }
     }
 
