@@ -80,6 +80,9 @@ router.post('/create', function(req, res) {
         sess.email = email;
         sess.fullname = results.name;
         console.log('Cookies set ' + sess.email + ' ' + sess.fullname);
+        req.session.save();
+        console.log(req.session);
+
         res.redirect('/home');
       }
     });
