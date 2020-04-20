@@ -41,21 +41,20 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
-    String userID;
 
     List<Post> allPosts;
     List<Post> filteredPosts;
-    Post newPost;
-
-    int pageNum;
-
-    PopupWindow popup;
     boolean newPostType;
     Category newPostCategory;
+    Post newPost;
 
-    Map<Category, String> categoryToString;
-
+    String userID;
     Set<Post> pinnedPosts;
+
+    PopupWindow popup;
+    Map<Category, String> categoryToString;
+    int pageNum;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
     ~~~~~~~~~~~~~~~  BUTTON CLICK FUNCTIONS  ~~~~~~~~~~~~~~~
     - onNewPostButtonClick
     - onSubmitButtonClick
-    - onSortButtonClick
+    - onFilterClick
+    - onFilterConfirmClick
+    - onPinPost (1, 2, 3)
     - prevPageClick
     - nextPageClick
      */
@@ -328,22 +329,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         refreshPage(); */
-        try {
-            URL url = new URL("http://localhost:3000/routes/homeRouter/getallposts");
-            AsyncTask<URL, String, String> task = new PullPostsFromDB();
-            task.execute(url);
-            String name = task.get();
-            Toast.makeText(this, name, Toast.LENGTH_LONG).show();
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        pullPosts();
     }
 
     public void prevPageClick(View view) {
@@ -530,7 +516,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*
-    ~~~~~~~~~~~~~~~  FUNCTIONS FOR SORTING POSTS  ~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~  FUNCTIONS FOR SORTING + SEARCHING POSTS  ~~~~~~~~~~~~~~~
     - sortPostsBy
      */
 
@@ -564,12 +550,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*
-    ~~~~~~~~~~~~~~~  OTHER FUNCTIONS  ~~~~~~~~~~~~~~~
-    - parseTags
-    -
-     */
-
     private Set<String> parseTags(String textInput) {
         if (textInput == null) {
             return new TreeSet<String>();
@@ -585,6 +565,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return out;
+
     }
 
     /*
@@ -595,28 +576,31 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO: implement this
     private void pushPost(Post post) {
-
-
-        // establish connection to http server
-
-
-        // package new post information in json format
-
-
-        // send http POST request to server
+        return;
     }
 
     //TODO: implement this
     private List<Post> pullPosts() {
 
-        String url = "dummy/url";
+        // try to establish a connection
+        try {
+            URL url = new URL("http://localhost:3000/home/getallposts");
+            AsyncTask<URL, String, String> task = new PullPostsFromDB();
+            task.execute(url);
 
+            // get the response and Toast it
+            String name = task.get();
+            Toast.makeText(this, name, Toast.LENGTH_LONG).show();
 
-        // establish connection to http server
-
-
-        // send http GET request to server and get response
-
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // unpack response into List<Post> instance and return
         return null;
@@ -630,11 +614,15 @@ public class MainActivity extends AppCompatActivity {
             try {
                 URL url = urls[0];
 
+                // establish connection to http server
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 
                 connect.setRequestMethod("POST");
 
-                // do more here
+                // package new post information in json format
+
+
+                // send http POST request to server
 
                 return "";
 
@@ -669,18 +657,25 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(URL... urls) {
 
+
             try {
-                URL url = new URL("http://10.0.2.2:3000/routes/homeRouter/getallposts");
+                URL url = new URL("http://10.0.2.2:3000/");
 
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 
+                // send http GET request to server
                 connect.setRequestMethod("GET");
                 connect.connect();
 
+                // read response using Scanner
                 Scanner in = new Scanner(url.openStream());
-                String msg = in.nextLine();
+                String msg = "";
 
-                JSONObject arrayOfPosts = new JSONObject(msg);
+                while (in.hasNext()) {
+                    msg += in.nextLine();
+                }
+
+                // JSONObject arrayOfPosts = new JSONObject(msg);
 
                 // turn arrayOfPosts into allPosts
 
@@ -688,7 +683,7 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 return e.toString();
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 return e.toString();
             }
         }
