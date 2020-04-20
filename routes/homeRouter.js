@@ -4,7 +4,9 @@ var homedb = require('../database/homedb.js');
 
 router.get('/', function (req, res) {   // /home
     console.log('Load homepage');
-    res.render('home.ejs', {message: null}); 
+    var name = req.session.fullname
+    var email = req.session.email
+    res.render('home.ejs', {name: name, email: email}); 
   });
 
 router.post('/createpost', function(req, res) {
