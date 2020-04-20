@@ -41,7 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         List<String> category = new ArrayList<String>();
         category.add("Food");
-        category.add("Academic");
+        category.add("Education");
         category.add("Clothing");
 
         List<String> donorType = new ArrayList<String>();
@@ -72,25 +72,47 @@ public class RegisterActivity extends AppCompatActivity {
     public void onSubmitButtonClick(View v) {
         Intent i = new Intent(this, MainActivity.class);
 
-        first = (EditText) findViewById(R.id.storeFirstName);
+        first = findViewById(R.id.storeFirstName);
         String firstName = first.getText().toString();
 
-        last = (EditText) findViewById(R.id.storeLastName);
+        last = findViewById(R.id.storeLastName);
         String lastName = last.getText().toString();
 
-        em = (EditText) findViewById(R.id.storeEmail);
+        em = findViewById(R.id.storeEmail);
         String userEmail = em.getText().toString();
 
-        pass = (EditText) findViewById(R.id.storePassword);
+        pass = findViewById(R.id.storePassword);
         String password = pass.getText().toString();
 
         Spinner catSpinner = findViewById(R.id.categorySpinner);
         String category = catSpinner.getSelectedItem().toString();
+        Category userCategory = Category.EMPTY;
+        switch(category) {
+            case("Food"):
+                userCategory = Category.FOOD;
+            case("Education"):
+                userCategory = Category.EDUCATION;
+            case("Clothing"):
+                userCategory = Category.CLOTHING;
+            default:
+                break;
+        }
 
         Spinner donSpinner = findViewById(R.id.userSpinner);
         String donorType = donSpinner.getSelectedItem().toString();
+        Donor donor = Donor.EMPTY;
+        switch(donorType) {
+            case("Donor"):
+                donor = Donor.DONOR;
+            case("Recipient"):
+                donor = Donor.RECIPIENT;
+            default:
+                break;
+        }
 
         String fullName = firstName + " " + lastName;
+
+        User curr = new User(firstName, lastName, userEmail, password, userCategory, donor);
 
         allUsers = new ArrayList<User>();
         allEmails = new HashSet<String>();
@@ -100,10 +122,11 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if (allEmails.contains(userEmail)) {
-            Toast.makeText(this, "Account is already registered with that email.\n Try again.", Toast.LENGTH_LONG);
+            Toast.makeText(this, "Account is already registered with that email.\nTry again.", Toast.LENGTH_LONG);
         } else {
             //create new account, launch mainActivity
-            Toast.makeText(this, "Registration successful", Toast.LENGTH_LONG);
+
+            Toast.makeText(this, "Registration successful!", Toast.LENGTH_LONG);
             i.putExtra(EMAIL, userEmail);
 
             startActivity(i);
@@ -181,11 +204,11 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private enum Category {
-        FOOD, EDUCATION, CLOTHING
+        FOOD, EDUCATION, CLOTHING, EMPTY
     }
 
     private enum Donor {
-        DONOR, RECIPIENT
+        DONOR, RECIPIENT, EMPTY
     }
 
 }
