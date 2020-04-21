@@ -4,20 +4,15 @@
 <html lang="en">
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <% include ../views/partials/head %>
+
     <script src="http://code.jquery.com/jquery.min.js"></script>
     <script>
         $("document").ready(function() {
             $('input[type=file]').on("change", function() {
                 var $files = $(this).get(0).files;
                 if ($files.length) {
-                   /*
-                    //reject big ass files
-                    if ($files[0].size>$(this).data("max-size") * 1024) {
-                        console.log("File too big");
-                        // change html to say 'pls choose smaller file'
-                    } */
-
                     console.log("uploading file to imgur");
 
                     var apiUrl = 'https://api.imgur.com/3/image';
@@ -76,14 +71,31 @@
     </script>
 </head>
 
-<body class="container">
-    <header>
-        <% include ../views/partials/header %>
-    </header>
+<body style="background-color: white;font-family: 'Open Sans', sans-serif;">
+    <nav class="navbar navbar-light navbar-expand-md navigation-clean-search">
+        <div class="container"><a class="navbar-brand" href="#">Charity Case</a><button data-toggle="collapse"
+                class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span
+                    class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="/home">home</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="#">new post</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link active" href="/profile">account</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="/edit">edit account info</a></li>
+                </ul>
+                <form class="form-inline mr-auto" target="_self">
+                    <div class="form-group"><label for="search-field"><i class="fa fa-search"></i></label><input
+                            class="form-control search-field" type="search" id="search-field" name="search"></div>
+                </form><a class="btn btn-light action-button" role="button" href="/account/logout">logout&nbsp;</a>
+            </div>
+        </div>
+    </nav>
     <main>
         <div>
         <form action="/account/profile" method="post">
-        <h4><b><i> Profile </i></b></h4>
+        <br>
+        <br>
+        <h4><b><i> <%- nameMessage %> </i></b></h4>
         <span>
             <img src="" 
             alt="ProfilePic" class="w3-border w3-padding" style="width:100%;max-width:200px">
@@ -114,6 +126,8 @@
 			<i><p id="signup"><font color="black"></font>Want to edit your account? <a href="/account/edit">You can do so here!</a></p></i>	
 		</div>
 </main>
+
+
 </body>
 
 </html>

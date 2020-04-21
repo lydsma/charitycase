@@ -35,6 +35,9 @@ var sess; //global session var
 var accountRouter = require('./routes/accountRouter');
 var homeRouter = require('./routes/homeRouter');
 
+app.use('/public', express.static('public'));
+
+
 const redirectLogin = (req, res, next) => {
 	if (!req.session.email) {
 		res.redirect('/');
@@ -62,7 +65,6 @@ app.use(function(req, res, next) {
     })
 })
 
-app.use('/public', express.static('public'));
 app.get('/', redirectHome, (req, res) => {
 	res.render('login.ejs', {
 		message: null
@@ -74,6 +76,25 @@ app.use('/account', accountRouter);
 
 // home routes
 app.use('/home', redirectLogin, homeRouter);
+
+app.get('/profile', function(req,res) {
+	var email = req.session.email;
+	var name = req.session.fullname;
+	var accType = req.session.recipient;
+	
+	if (email) {
+	  console.log('Loading profile page');
+	  res.render('profile.ejs', {nameMessage: name, emailMessage: email, accType: accType}); 
+	}
+  });
+
+    // get editpage
+app.get('/edit', function (req, res) {
+	console.log('Loading edit page');
+	res.render('edit.ejs', {namemessage: null, pwmessage: null, changepw: false}); 
+  });
+  
+
 
 /**********************example code; delete later***************************/
 

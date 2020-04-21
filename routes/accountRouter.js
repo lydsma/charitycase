@@ -108,6 +108,7 @@ router.post('/create', function(req, res) {
     var email = sess.email;
     var name = sess.fullname;
     var recipient = sess.recipient;
+    
     if (email) {
       console.log('Loading profile page');
       res.render('profile.ejs', {nameMessage: name, emailMessage: email, accType: recipient}); 
@@ -142,12 +143,6 @@ router.post('/create', function(req, res) {
       }
     });
   });
-
-  // get editpage
-router.get('/edit', function (req, res) {
-  console.log('Loading edit page');
-  res.render('edit.ejs', {namemessage: null, pwmessage: null, changepw: false}); 
-});
 
   // edit: change name 
  router.post('/changename', function(req, res) {

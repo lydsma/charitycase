@@ -19,7 +19,16 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <script>
-    
+        window.onload = function() {
+            $.get('/account/profilepic', function(data) {
+                console.log(data);
+                if (data != '') {
+                    $("img").attr("src",data);
+                } else {
+                    $("img").attr("src","https://www.searchpng.com/wp-content/uploads/2019/02/Deafult-Profile-Pitcher.png");
+                }
+            });
+        };
 </script>
 
 <body style="background-color: white;font-family: 'Open Sans', sans-serif;">
@@ -32,11 +41,12 @@
                     <li class="nav-item" role="presentation"><a class="nav-link active" href="#">home</a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link" href="#">new post</a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link" href="/profile">account</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="/edit">edit account info</a></li>
                 </ul>
                 <form class="form-inline mr-auto" target="_self">
                     <div class="form-group"><label for="search-field"><i class="fa fa-search"></i></label><input
                             class="form-control search-field" type="search" id="search-field" name="search"></div>
-                </form><a class="btn btn-light action-button" role="button" href="#">logout&nbsp;</a>
+                </form><a class="btn btn-light action-button" role="button" href="/account/logout">logout&nbsp;</a>
             </div>
         </div>
     </nav>
@@ -52,7 +62,7 @@
     <div class="border rounded shadow-lg profile-card" data-bs-hover-animate="pulse"
         style="margin-left: 15%;margin-right: 15%;background-color: #ffffff;">
         <div class="border rounded border-dark profile-back" style="height: 80px;background-color: rgb(86,198,198);">
-        </div><img class="rounded-circle border rounded border-dark shadow-lg profile-pic" src="assets/img/2.jpg">
+        </div><img class="rounded-circle border rounded border-dark shadow-lg profile-pic" src="">
         <h3 class="border rounded border-dark shadow-lg profile-name" style="background-color: #56c6c6;color: #ffffff;">
             Insert name here</h3>
         <div class="d-table" style="margin-top: 30px;margin-bottom: 30px;width: 100%;">
