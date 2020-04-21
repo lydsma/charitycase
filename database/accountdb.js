@@ -119,6 +119,23 @@ var checkProfilePic_DB = function(emailInput, callback) {
     });
 };
 
+var checkType_DB = function(emailInput, callback) {
+    Account.findOne({email: emailInput}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('account dne', null);
+        } else {
+            console.log('account type = ' + account.recipient)
+            if (account.recipient) {
+                callback('recipient', null);
+            } else {
+                callback('donor', null);
+            }
+        }
+    });
+};
+
 var changeProfilePic_DB = function(emailInput, newProfilePic, callback) {
     Account.findOneAndUpdate({email: emailInput}, {profilepic: newProfilePic}, {new: true}, function (err, result) {
         if (err) {
@@ -151,7 +168,8 @@ var accountdb = {
     changePassword: changePassword_DB,
     checkProfilePic: checkProfilePic_DB,
     changeProfilePic: changeProfilePic_DB,
-    deleteAccount: deleteAccount_DB
+    deleteAccount: deleteAccount_DB,
+    checkType: checkType_DB,
 }
 
 module.exports = accountdb;
