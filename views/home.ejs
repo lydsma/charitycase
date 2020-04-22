@@ -21,33 +21,53 @@
         background-color: aliceblue;
         display: none;
     }
+
+    .dropdown-content {
+        position: absolute;
+        display: none;
+        background-color: #f6f6f6;
+        overflow: auto;
+        border: 1px solid #ddd;
+        transform: translateY(39px);
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+
+    }
 </style>
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <script>
-   /** window.onload = function () {
-        $.get('/account/profilepic', function (data) {
-            console.log(data);
-            if (data != '') {
-                $("img").attr("src", data);
-            } else {
-                $("img").attr("src",
-                    "https://www.searchpng.com/wp-content/uploads/2019/02/Deafult-Profile-Pitcher.png");
-            }
-        });
-    };*/
-</script>
+    function filterFunction() {
+      input = document.getElementById("searchField");
+      if(input.value != '') {
+        $.post('/home/filter', {seq: input.value}, function(response){
+          var results = response.results;
+          $('#posts').empty();
+          for (var i = 0; i < results.length; i++) {
+              $('#posts').append("<div class='border rounded shadow-lg profile-card' data-bs-hover-animate='pulse' style='margin-left: 15%;margin-right: 15%; margin-bottom: 30px; background-color: #ffffff;'> <div class='border rounded border-dark profile-back' style='height: 80px;background-color: rgb(86,198,198);'> </div><img class='rounded-circle border rounded border-dark shadow-lg profile-pic'src=''>><h3 class='border rounded border-dark shadow-lg profile-name' style='background-color: #56c6c6;color: #ffffff;'>" + results[i].sender + "</h3><div class='d-table' style='margin-top: 30px;margin-bottom: 30px;width: 100%;'><div class='float-left' style='width: 50%;color: #ffffff;'><p style='color: #222222;font-size: 20px'><strong>" + results[i].type + "</strong></p><p style='font-size: 20px;color: #222222;'><em>" + results[i].category + "</em></p><p style='color: #222222;font-size: 20px;'>zip</p></div><div class='float-right' style='width: 50%;'><p class='my-auto' style='margin: 0;color: #222222;'>" + results[i].description + "</p></div></div></div>")
+          }
+      });
+      }
+}
+
+  </script>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#createPost').hide();
     })
 </script>
 
 <body style="background-color: white;font-family: 'Open Sans', sans-serif;">
     <nav class="navbar navbar-light navbar-expand-md navigation-clean-search">
-        <div class="container"><a class="navbar-brand" href="#">Charity Case</a><button data-toggle="collapse"
+        <div class="container"><a class="navbar-brand" href="/">Charity Case</a><button data-toggle="collapse"
                 class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span
                     class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navcol-1">
@@ -56,10 +76,10 @@
                     <li class="nav-item" role="presentation"><a class="nav-link" href="/profile">account</a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link" href="/edit">edit account info</a></li>
                 </ul>
-                <form class="form-inline mr-auto" target="_self">
-                    <div class="form-group"><label for="search-field"><i class="fa fa-search"></i></label><input
-                            class="form-control search-field" type="search" id="search-field" name="search"></div>
-                </form><a class="btn btn-light action-button" role="button" href="/account/logout">logout&nbsp;</a>
+                <div class="form-inline mr-auto"></form>
+                    <div class="form-group"><label for="searchField"><i class="fa fa-search"></i></label><input
+                            class="form-control search-field" type="text" placeholder="search" id="searchField" name="searchField" onkeyup="filterFunction()"></div>
+                    </div><a class="btn btn-light action-button" role="button" href="/account/logout">logout&nbsp;</a>
             </div>
         </div>
     </nav>
@@ -88,16 +108,22 @@
             <button type="button" onclick="$('.posts').show(); $('#createPost').hide()">Cancel</button>
         </form>
     </div>
-    <div class="posts" id="posts"> 
+    <% if (posts == null) {%>
+    <p>No posts available.</p>
+    <% } else {%>
+    <div class="posts" id="posts">
         <% for (var i = posts.length-1; i >= 0 ; i--) {%>
         <div class="border rounded shadow-lg profile-card" data-bs-hover-animate="pulse"
             style="margin-left: 15%;margin-right: 15%; margin-bottom: 30px; background-color: #ffffff;">
             <div class="border rounded border-dark profile-back"
                 style="height: 80px;background-color: rgb(86,198,198);">
-            </div><img class="rounded-circle border rounded border-dark shadow-lg profile-pic" src=<%=posts[i].profilepic%>>
+            </div><img class="rounded-circle border rounded border-dark shadow-lg profile-pic"
+                src=<%=posts[i].profilepic%>>
             <h3 class="border rounded border-dark shadow-lg profile-name"
                 style="background-color: #56c6c6;color: #ffffff;">
-                <%=posts[i].sender%></h3>
+                <a id="posterName" name="posterName" href="/home/viewprofile"><%=posts[i].sender%></h3>
+
+                
             <div class="d-table" style="margin-top: 30px;margin-bottom: 30px;width: 100%;">
                 <div class="float-left" style="width: 50%;color: #ffffff;">
                     <p style="color: #222222;font-size: 20px;"><strong><%=posts[i].type%></strong></p>
@@ -110,7 +136,9 @@
             </div>
         </div>
         <% } %>
+        <% } %>
     </div>
+
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>

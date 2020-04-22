@@ -121,7 +121,7 @@ app.get('/signup', function (req, res) {
 		res.json({'status':'no posts'});
 	  } else {
 		console.log('sending ' + results);
-		res.json({'posts': results});
+		res.json({'posts': results});thi
 	  }
 	}); 
   });
@@ -144,6 +144,25 @@ app.get('/signup', function (req, res) {
 			res.json({'results': 'Success'});
 		}
 	  });
+  });
+
+  app.post('/mobilesignup', function(req,res){
+	var name = req.body.name;
+	var email = req.body.email;
+	var password = req.body.password;
+	var accType = req.body.accType;
+
+	accountdb.createAccount(name, email, password, accType, function (results, err) {
+	  if (err) {
+		res.json({'results': err});
+	  } else if (email == "" || password == "" || name == "") {
+		res.json({'results': 'Please fill out all fields'});
+	  } else if (results == 'account exists') {
+		res.json({'results': 'User already exists'});
+	  } else {
+		res.json({'results': 'Success'});
+	  }
+	});
   });
 
 /************************* MOBILE ***************************/
