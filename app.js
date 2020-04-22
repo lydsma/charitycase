@@ -37,7 +37,6 @@ var homeRouter = require('./routes/homeRouter');
 
 app.use('/public', express.static('public'));
 
-
 const redirectLogin = (req, res, next) => {
 	if (!req.session.email) {
 		res.redirect('/');
@@ -71,12 +70,13 @@ app.get('/', redirectHome, (req, res) => {
 	});
 });
 
-// sign up, login, current user routes
+// account routes
 app.use('/account', accountRouter);
 
 // home routes
 app.use('/home', redirectLogin, homeRouter);
 
+// get profile
 app.get('/profile', function(req,res) {
 	var email = req.session.email;
 	var name = req.session.fullname;
@@ -88,12 +88,19 @@ app.get('/profile', function(req,res) {
 	}
   });
 
-    // get editpage
+// get editpage
 app.get('/edit', function (req, res) {
 	console.log('Loading edit page');
 	res.render('edit.ejs', {namemessage: null, pwmessage: null, changepw: false}); 
   });
   
+// get signup page
+app.get('/signup', function (req, res) {
+	console.log('Loading signup page');
+	res.render('signup.ejs', {
+	  message: null
+	});
+  });
 
 
 /**********************example code; delete later***************************/

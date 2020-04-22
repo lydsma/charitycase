@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
+var async = require('async');
 var homedb = require('../database/homedb.js');
+var accountdb = require('../database/accountdb.js');  //so can get prof pics
+
 
 router.get('/', function (req, res) {   // /home
     console.log('Load homepage');
@@ -14,7 +17,35 @@ router.get('/', function (req, res) {   // /home
         res.json({'status':'no posts'});
       } else {
         console.log('sending ' + results);
-        res.render('home.ejs', {'name': name, 'email': email, 'posts': results});
+
+        //get profile pic for each post 
+        var finalResults = [];
+        async.each(results, function(f, cb) {
+          console.log('async ' + f.sender);
+          accountdb.checkHomeProfilePic(f.sender, function (picLink, err) {
+            if (err) {
+              console.log('error');
+            } else {
+                if (picLink == '' || picLink == undefined || picLink == 'account dne') {
+                  picLink = 'https://www.searchpng.com/wp-content/uploads/2019/02/Deafult-Profile-Pitcher.png';
+                }
+                var newPost = {
+                  sender: f.sender,
+                  type: f.type,
+                  category: f.category,
+                  zip: f.zip,
+                  tags: f.tags,
+                  description: f.description,
+                  profilepic: picLink
+                };
+                finalResults.push(newPost);
+                cb();
+            }
+          });
+        }, function() {
+            console.log(JSON.stringify(finalResults));
+            res.render('home.ejs', {'name': name, 'email': email, 'posts': finalResults});
+        }); //end async
       }
     }); 
   });

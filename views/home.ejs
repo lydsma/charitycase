@@ -26,7 +26,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <script>
-    window.onload = function () {
+   /** window.onload = function () {
         $.get('/account/profilepic', function (data) {
             console.log(data);
             if (data != '') {
@@ -36,7 +36,7 @@
                     "https://www.searchpng.com/wp-content/uploads/2019/02/Deafult-Profile-Pitcher.png");
             }
         });
-    };
+    };*/
 </script>
 
 <script>
@@ -88,13 +88,13 @@
             <button type="button" onclick="$('.posts').show(); $('#createPost').hide()">Cancel</button>
         </form>
     </div>
-    <div class="posts" id="posts">
+    <div class="posts" id="posts"> 
         <% for (var i = posts.length-1; i >= 0 ; i--) {%>
         <div class="border rounded shadow-lg profile-card" data-bs-hover-animate="pulse"
             style="margin-left: 15%;margin-right: 15%; margin-bottom: 30px; background-color: #ffffff;">
             <div class="border rounded border-dark profile-back"
                 style="height: 80px;background-color: rgb(86,198,198);">
-            </div><img class="rounded-circle border rounded border-dark shadow-lg profile-pic" src="">
+            </div><img class="rounded-circle border rounded border-dark shadow-lg profile-pic" src=<%=posts[i].profilepic%>>
             <h3 class="border rounded border-dark shadow-lg profile-name"
                 style="background-color: #56c6c6;color: #ffffff;">
                 <%=posts[i].sender%></h3>

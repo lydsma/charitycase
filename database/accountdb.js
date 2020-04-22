@@ -119,6 +119,18 @@ var checkProfilePic_DB = function(emailInput, callback) {
     });
 };
 
+var checkHomeProfilePic_DB = function(nameInput, callback) {
+    Account.findOne({name: nameInput}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('account dne', null);
+        } else {
+            callback(account.profilepic, null);
+        }
+    });
+};
+
 var checkType_DB = function(emailInput, callback) {
     Account.findOne({email: emailInput}, (err, account) => {
         if (err) {
@@ -167,6 +179,7 @@ var accountdb = {
     changeName: changeName_DB,
     changePassword: changePassword_DB,
     checkProfilePic: checkProfilePic_DB,
+    checkHomeProfilePic: checkHomeProfilePic_DB,
     changeProfilePic: changeProfilePic_DB,
     deleteAccount: deleteAccount_DB,
     checkType: checkType_DB,

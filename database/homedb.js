@@ -63,7 +63,7 @@ var getAllPosts_DB = function (callback) {
     } else if (allPosts.length == 0) {
       callback('no posts', null);
     } else {
-      callback(allPosts, null);
+     callback(allPosts, null); //allPosts is an array of objs 
     }
   });
 };

@@ -12,22 +12,6 @@ router.get('/currentUser', function (req, res) {
   }
 });
 
-// get signup page
-router.get('/', function (req, res) {
-  console.log('Loading signup page');
-  res.render('signup.ejs', {
-    message: null
-  });
-});
-
-// get signup page
-router.get('/signup', function (req, res) {
-  console.log('Loading signup page');
-  res.render('signup.ejs', {
-    message: null
-  });
-});
-
 // signup: create new account
 router.post('/create', function (req, res) {
   var name = req.body.name;
@@ -178,6 +162,22 @@ router.post('/updateprofilepic', function (req, res) {
     }
   });
 });
+
+/** get other ppl's profile pix 
+router.post('/gethomepic', function (req, res) {
+  var user = req.body.user;
+  console.log('getting user prof');
+
+  accountdb.checkHomeProfilePic(user, function (results, err) {
+    if (err) {
+      console.log('error saving');
+      res.send(err);
+    } else {
+      res.send(results);
+    }
+  });
+});*/
+
 
 // edit: change name 
 router.post('/changename', function (req, res) {
