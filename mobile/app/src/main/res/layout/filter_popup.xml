@@ -87,70 +87,36 @@
             </LinearLayout>
 
 
-            <RadioGroup
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/round_white_border">
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Zip code filter"
                     android:background="@drawable/round_blue_border"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:textColor="#000000"></TextView>
+                    android:textColor="#000000"
+                    android:text="Additional filters"></TextView>
 
-                <RadioButton
-                    android:id="@+id/all_zip_radio"
+                <CheckBox
+                    android:id="@+id/only_pinned"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="All zip codes"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                    android:text="Only include pinned posts" />
 
-                <RadioButton
-                    android:id="@+id/one_zip_radio"
+                <CheckBox
+                    android:id="@+id/only_nearby"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Specific zip code (enter below)"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                    android:text="Only include posts near me" />
 
-                <EditText
-                    android:id="@+id/filter_zip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="zip code"></EditText>
-            </RadioGroup>
+            </LinearLayout>
 
-            <RadioGroup
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/round_white_border">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pinned post filter"
-                    android:background="@drawable/round_blue_border"
-                    android:textStyle="bold"
-                    android:textColor="#000000"></TextView>
 
-                <RadioButton
-                    android:id="@+id/all_post_radio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="All posts"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
-                <RadioButton
-                    android:id="@+id/pinned_post_radio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Only pinned posts"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-            </RadioGroup>
 
         </LinearLayout>
 
