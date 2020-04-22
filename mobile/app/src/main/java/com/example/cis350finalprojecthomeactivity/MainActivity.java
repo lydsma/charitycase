@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -584,13 +586,20 @@ public class MainActivity extends AppCompatActivity {
 
         // try to establish a connection
         try {
-            URL url = new URL("http://localhost:3000/home/getallposts");
+            URL url = new URL("http://10.0.2.2:3000/mobilegethomeposts");
             AsyncTask<URL, String, String> task = new PullPostsFromDB();
             task.execute(url);
 
             // get the response and Toast it
-            String name = task.get();
-            Toast.makeText(this, name, Toast.LENGTH_LONG).show();
+            String msg = task.get();
+
+            //@stev and ozzi this is 4 if u need to covert to json array
+            /**
+            JSONObject arrayOfPosts = new JSONObject(msg);
+            JSONArray posts = arrayOfPosts.getJSONArray("posts");
+             */
+
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -659,7 +668,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             try {
-                URL url = new URL("http://10.0.2.2:3000/");
+               URL url = urls[0];
 
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 
@@ -672,13 +681,13 @@ public class MainActivity extends AppCompatActivity {
                 String msg = "";
 
                 while (in.hasNext()) {
-                    msg += in.nextLine();
+                    msg = in.useDelimiter("\\A").next();
                 }
 
                 // JSONObject arrayOfPosts = new JSONObject(msg);
 
                 // turn arrayOfPosts into allPosts
-
+                Log.v("string results", msg);
                 return msg;
 
             } catch (IOException e) {

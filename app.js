@@ -34,6 +34,8 @@ app.use(express.static(path.join(__dirname, 'node_modules')));
 var sess; //global session var
 var accountRouter = require('./routes/accountRouter');
 var homeRouter = require('./routes/homeRouter');
+var homedb = require('./database/homedb.js');
+
 
 app.use('/public', express.static('public'));
 
@@ -101,6 +103,69 @@ app.get('/signup', function (req, res) {
 	  message: null
 	});
   });
+
+/************************* MOBILE ***************************/
+
+  app.get('/test', function(req,res){
+	console.log('android calling');
+	res.json({'name' : 'works'});
+  });
+
+ app.get('/mobilegethomeposts', function (req, res) {   // /home
+	console.log('Load homepage');
+	 homedb.getAllPosts(function(results, err) {
+	  if (err) {
+		console.log(err);
+		res.json({'status':err});
+	  } else if (results == 'no posts') {
+		res.json({'status':'no posts'});
+	  } else {
+		console.log('sending ' + results);
+		res.json({'posts': results});thi
+	  }
+	}); 
+  });
+
+  app.post('/mobilechecklogin', function(req,res){
+	console.log('Checking account on mobile');
+	var email = req.body.email;
+	var password = req.body.password;
+  
+	accountdb.checkLogin(email, password, function (results, err) {
+		if (err) {
+			res.json({'results': err});
+		} else if (email == "" || password == "") {
+			res.json({'results': 'Please fill out all fields'});
+		} else if (results == 'account dne') {
+			res.json({'results': 'User does not exist'});
+		} else if (results == 'incorrect password') {
+			res.json({'results': 'Incorrect password'});
+		} else {
+			res.json({'results': 'Success'});
+		}
+	  });
+  });
+
+  app.post('/mobilesignup', function(req,res){
+	var name = req.body.name;
+	var email = req.body.email;
+	var password = req.body.password;
+	var accType = req.body.accType;
+
+	accountdb.createAccount(name, email, password, accType, function (results, err) {
+	  if (err) {
+		res.json({'results': err});
+	  } else if (email == "" || password == "" || name == "") {
+		res.json({'results': 'Please fill out all fields'});
+	  } else if (results == 'account exists') {
+		res.json({'results': 'User already exists'});
+	  } else {
+		res.json({'results': 'Success'});
+	  }
+	});
+  });
+
+/************************* MOBILE ***************************/
 
 
 /**********************example code; delete later***************************/

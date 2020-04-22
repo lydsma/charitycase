@@ -27,7 +27,14 @@ accountSchema.methods.standardizeName = function() {
     return this.name;
 }
 
+var wallPostSchema = new Schema({
+    sender: String,
+    receiver: String,
+    description: String
+});
+
 var Account = mongoose.model('Accounts', accountSchema);
+var WallPost = mongoose.model('WallPosts', wallPostSchema);
 
 /***********************DB calls**************************/
 
@@ -173,6 +180,51 @@ var deleteAccount_DB = function(emailInput, callback) {
     });
 };
 
+var getUser_DB = function(nameInput, callback) {
+    Account.findOne({name: nameInput}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('account dne', null);
+        } else {
+            callback(account, null); //send back the account object
+        }
+    });
+};
+
+var createWallPost_DB = function (senderInput, receiverInput, description, callback) {
+    var newWallPost = new WallPost({
+      sender: senderInput,
+      receiver: receiverInput,
+      description: description
+    });
+  
+    newWallPost.save((err) => {
+      if (err) {
+        res.type('html').status(200);
+        res.write('uh oh: ' + err);
+        console.log(err);
+        callback(null, err);
+      } else {
+        // display the "successfull created" page using EJS
+        console.log('Successfully saved: ' + newWallPost);
+        callback(newWallPost, null);
+      }
+    });
+  };
+
+var getAllWallPosts_DB = function (nameInput, callback) {
+    WallPost.find({receiver: nameInput}, (err, allWallPosts) => {
+        if (err) {
+            callback(null, err);
+        } else if (allWallPosts.length == 0) {
+            callback('no wall posts', null);
+        } else {
+            callback(allWallPosts, null);
+        }
+    });
+};
+
 var accountdb = {
     createAccount: createAccount_DB,
     checkLogin: checkLogin_DB,
@@ -183,6 +235,9 @@ var accountdb = {
     changeProfilePic: changeProfilePic_DB,
     deleteAccount: deleteAccount_DB,
     checkType: checkType_DB,
+    getUser: getUser_DB,
+    createWallPost: createWallPost_DB,
+    getAllWallPosts: getAllWallPosts_DB,
 }
 
 module.exports = accountdb;
