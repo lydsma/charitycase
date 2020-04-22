@@ -3,6 +3,7 @@ package com.example.cis350finalprojecthomeactivity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,11 +15,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -110,6 +113,32 @@ public class RegisterActivity extends AppCompatActivity {
 
         User curr = new User(firstName, lastName, userEmail, password, userCategory, donor);
 
+        try {
+            URL url = new URL("http://10.0.2.2:3000/mobilesignup");
+            AsyncTask<URL, String, String> task = new RegisterUser();
+            task.execute(url);
+
+            // get the response and Toast it
+            String msg = task.get();
+
+            //@stev and ozzi this is 4 if u need to covert to json array
+            /**
+             JSONObject arrayOfPosts = new JSONObject(msg);
+             JSONArray posts = arrayOfPosts.getJSONArray("posts");
+             */
+
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         allUsers = new ArrayList<User>();
         allEmails = new HashSet<String>();
 
@@ -136,14 +165,14 @@ public class RegisterActivity extends AppCompatActivity {
 
     /*                BACKEND FUNCTIONS                      */
 
-    class getUsersFromDB extends AsyncTask<URL, String, String> {
+    class RegisterUser extends AsyncTask<URL, String, String> {
 
         @Override
         protected String doInBackground(URL... urls) {
 
 
             try {
-                URL url = new URL("http://10.0.2.2:3000/");
+                URL url = urls[0];
 
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 
@@ -156,13 +185,13 @@ public class RegisterActivity extends AppCompatActivity {
                 String msg = "";
 
                 while (in.hasNext()) {
-                    msg += in.nextLine();
+                    msg = in.useDelimiter("\\A").next();
                 }
 
                 // JSONObject arrayOfPosts = new JSONObject(msg);
 
                 // turn arrayOfPosts into allPosts
-
+                Log.v("string results", msg);
                 return msg;
 
             } catch (IOException e) {
