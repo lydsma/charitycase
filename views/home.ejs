@@ -97,7 +97,9 @@
             </div><img class="rounded-circle border rounded border-dark shadow-lg profile-pic" src=<%=posts[i].profilepic%>>
             <h3 class="border rounded border-dark shadow-lg profile-name"
                 style="background-color: #56c6c6;color: #ffffff;">
-                <%=posts[i].sender%></h3>
+                <a id="posterName" name="posterName" href="/home/viewprofile"><%=posts[i].sender%></h3>
+
+                
             <div class="d-table" style="margin-top: 30px;margin-bottom: 30px;width: 100%;">
                 <div class="float-left" style="width: 50%;color: #ffffff;">
                     <p style="color: #222222;font-size: 20px;"><strong><%=posts[i].type%></strong></p>
@@ -111,6 +113,7 @@
         </div>
         <% } %>
     </div>
+
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>

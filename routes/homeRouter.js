@@ -84,4 +84,60 @@ router.get('/getallposts', function(req,res){
   });
 });
 
+router.get('/viewprofile', function(req,res){
+  var name = "Jack McKnight";
+  // var name = req.params.name;
+
+  accountDB.getUser(name, function(results, err) {
+    if (err) {
+      console.log(err);
+      res.json({'status':err});
+    } else if (results == 'account dne') {
+      res.json({'status':'account dne'});
+    } else {
+      console.log('sending ' + results);
+      var email = results.email;
+      var recipient = results.recipient;
+
+      accountdb.getAllWallPosts(name, function(results, err) {
+        if (err) {
+          console.log(err);
+          res.json({'status':err});
+        } else {
+          console.log('sending ' + results);
+
+          if (results == 'no wall posts') {
+            console.log("no wall posts");
+          }
+
+          if (email) {
+            console.log('Loading this users profile page');
+            res.render('viewprofile.ejs', {nameMessage: name, emailMessage: email, accType: recipient, wallposts: results}); 
+            }
+        }
+      }); 
+  
+      
+    }
+  })
+
+  
+});
+
+router.post('/createwallpost', function(req, res) {
+  var sender = req.session.fullname;
+  var receiver = "Jack McKnight";
+  var description = req.body.description;
+  
+  accountdb.createWallPost(sender, receiver, description, function(results, err) {
+    if (err) {
+      console.log(err);
+      res.json({'status':err});
+    } else {
+      console.log('Created ' + results);
+      res.redirect('/home/viewprofile');
+    }
+  });
+});
+
 module.exports = router;

@@ -1,4 +1,4 @@
-<!-- views/profile.ejs -->
+<!-- views/viewprofile.ejs -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -61,15 +61,28 @@
             $.get('/account/profilepic', function(data) {
                 console.log(data);
                 if (data != '') {
-                    $("#profilepic").attr("src",data);
+                    $("img").attr("src",data);
                 } else {
-                    $("#profilepic").attr("src","https://www.searchpng.com/wp-content/uploads/2019/02/Deafult-Profile-Pitcher.png");
+                    $("img").attr("src","https://www.searchpng.com/wp-content/uploads/2019/02/Deafult-Profile-Pitcher.png");
                 }
             });
         };
 
     </script>
 </head>
+
+<style>
+    #createWallPost {
+        background-color: aliceblue;
+        display: none;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        $('#createWallPost').hide();
+    })
+</script>
 
 <body style="background-color: white;font-family: 'Open Sans', sans-serif;">
     <nav class="navbar navbar-light navbar-expand-md navigation-clean-search">
@@ -79,6 +92,7 @@
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav">
                     <li class="nav-item" role="presentation"><a class="nav-link" href="/home">home</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="#">new post</a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link active" href="/profile">account</a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link" href="/edit">edit account info</a></li>
                 </ul>
@@ -89,6 +103,7 @@
             </div>
         </div>
     </nav>
+
     <main>
         <div>
         <form action="/account/profile" method="post">
@@ -96,11 +111,9 @@
         <br>
         <h4><b><i> <%- nameMessage %> </i></b></h4>
         <span>
-            <img id = "profilepic" src="" alt="ProfilePic" class="w3-border w3-padding" style="width:100%;max-width:200px">
+            <img src="" 
+            alt="ProfilePic" class="w3-border w3-padding" style="width:100%;max-width:200px">
             <p>
-            </p>
-            <p>
-                <i>Change your profile picture: </i><input type="file" name="profPic" accept="image/*" />
             </p>
         </span>
         <p>
@@ -121,8 +134,39 @@
 
         <div class="div-signup">
             <p></p>
-			<i><p id="signup"><font color="black"></font>Want to edit your account? <a href="/edit">You can do so here!</a></p></i>	
-		</div>
+			<i><p id="signup"><font color="black"></font> <a href="/">Back to Home Page</a></p></i>	
+        </div>
+        
+        <p></p>
+        <button type="button" onclick="$('.wallposts').hide(); $('#createWallPost').show()">Create Wall Post</button>
+        <p></p>
+
+        <form method="post" action="/home/createWallPost" id="createWallPost">
+            <label for="description">Description:</label><br>
+            <input type="text" id="description" name="description" value=""><br><br>
+            <input type="submit" value="Submit">
+            <button type="button" onclick="$('.posts').show(); $('#createPost').hide()">Cancel</button>
+        </form>
+
+        <div class="wallposts" id="wallposts">
+            <% if (wallposts.length != 0) {
+            for (var i = wallposts.length-1; i >= 0 ; i--) {%>
+            <div class="border rounded shadow-lg profile-card" data-bs-hover-animate="pulse"
+                style="margin-left: 15%;margin-right: 15%; margin-bottom: 30px; background-color: #ffffff;">
+                
+                <h3 class="border rounded border-dark shadow-lg profile-name"
+                    style="background-color: #56c6c6;color: #ffffff;">
+                    <%=wallposts[i].sender%></h3>
+    
+                    
+                <div class="d-table" style="margin-top: 30px;margin-bottom: 30px;width: 100%;">
+                    <div class="float" style="width: 50%;">
+                        <p class="my-auto" style="margin: 0;color: #222222;"><%=wallposts[i].description%></p>
+                    </div>
+                </div>
+            </div>
+            <% } }%>
+        </div>
 </main>
 
 
