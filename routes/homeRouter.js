@@ -88,7 +88,7 @@ router.get('/viewprofile', function(req,res){
   var name = "Jack McKnight";
   // var name = req.params.name;
 
-  accountDB.getUser(name, function(results, err) {
+  accountdb.getUser(name, function(results, err) {
     if (err) {
       console.log(err);
       res.json({'status':err});
@@ -116,8 +116,6 @@ router.get('/viewprofile', function(req,res){
             }
         }
       }); 
-  
-      
     }
   })
 
