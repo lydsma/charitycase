@@ -63,14 +63,75 @@ var getAllPosts_DB = function (callback) {
     } else if (allPosts.length == 0) {
       callback('no posts', null);
     } else {
-     callback(allPosts, null); //allPosts is an array of objs 
+      callback(allPosts, null); //allPosts is an array of objs 
     }
   });
 };
 
+var getFilteredPosts_DB = function (searchEntry, callback) {
+
+  Post.find({
+    sender: searchEntry
+  }, (err, senders) => {
+    if (err) {
+      console.log(err);
+    } else if (senders.length != 0) {
+      console.log('senders callback')
+      console.log(senders.length);
+      callback(senders, null);
+    } else {
+      Post.find({
+        type: searchEntry
+      }, (err, types) => {
+        if (err) {
+          console.log(err);
+        } else if (types.length != 0) {
+          console.log('types callback')
+          console.log(types)
+          callback(types, null)
+        } else {
+          Post.find({
+            category: searchEntry
+          }, (err, categories) => {
+            if (err) {
+              console.log(err);
+            } else if (categories.length != 0) {
+              console.log('category callback')
+              callback(categories, null)
+            } else {
+              Post.find({
+                tags: searchEntry
+              }, (err, tags) => {
+                if (err) {
+                  console.log(err);
+                } else if (tags.length != 0) {
+                  console.log('tag callback')
+                  callback(tags, null)
+                } else {
+                  console.log('empty callback')
+                  callback(null, null);
+                }
+              })
+            }
+          })
+        }
+      })
+    }
+  })
+
+  // Post.find({zip: searchEntry}, (err, senders) => {
+  //   if (err) {
+  //     console.log(err);
+  //   } else {
+  //     results.push(senders)
+  //   }
+  // })
+}
+
 var homedb = {
   createPosts: createPost_DB,
-  getAllPosts: getAllPosts_DB
+  getAllPosts: getAllPosts_DB,
+  getFilteredPosts: getFilteredPosts_DB,
 }
 
 module.exports = homedb;

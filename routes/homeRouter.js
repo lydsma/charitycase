@@ -69,6 +69,18 @@ router.post('/createpost', function(req, res) {
   });
 });
 
+router.post('/filter', function(req, res) {
+  var searchEntry = ("" + req.body.seq);
+  console.log('search entry = ' + searchEntry)
+  homedb.getFilteredPosts(searchEntry, function (results, err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('results = ' + results)
+      res.send({'results': results})
+    }
+  }) 
+})
 
 
 router.get('/getallposts', function(req,res){
