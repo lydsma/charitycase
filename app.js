@@ -34,6 +34,8 @@ app.use(express.static(path.join(__dirname, 'node_modules')));
 var sess; //global session var
 var accountRouter = require('./routes/accountRouter');
 var homeRouter = require('./routes/homeRouter');
+var homedb = require('./database/homedb.js');
+
 
 app.use('/public', express.static('public'));
 
@@ -101,6 +103,30 @@ app.get('/signup', function (req, res) {
 	  message: null
 	});
   });
+
+/************************* MOBILE ***************************/
+
+  app.get('/test', function(req,res){
+	console.log('android calling');
+	res.json({'name' : 'works'});
+  });
+
+ app.get('/mobilegethomeposts', function (req, res) {   // /home
+	console.log('Load homepage');
+	 homedb.getAllPosts(function(results, err) {
+	  if (err) {
+		console.log(err);
+		res.json({'status':err});
+	  } else if (results == 'no posts') {
+		res.json({'status':'no posts'});
+	  } else {
+		console.log('sending ' + results);
+	res.json({'posts': results});
+	  }
+	}); 
+  });
+
+/************************* MOBILE ***************************/
 
 
 /**********************example code; delete later***************************/

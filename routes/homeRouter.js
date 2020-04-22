@@ -4,7 +4,6 @@ var async = require('async');
 var homedb = require('../database/homedb.js');
 var accountdb = require('../database/accountdb.js');  //so can get prof pics
 
-
 router.get('/', function (req, res) {   // /home
     console.log('Load homepage');
     var name = req.session.fullname
