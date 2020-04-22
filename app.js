@@ -121,9 +121,29 @@ app.get('/signup', function (req, res) {
 		res.json({'status':'no posts'});
 	  } else {
 		console.log('sending ' + results);
-	res.json({'posts': results});
+		res.json({'posts': results});
 	  }
 	}); 
+  });
+
+  app.post('/mobilechecklogin', function(req,res){
+	console.log('Checking account on mobile');
+	var email = req.body.email;
+	var password = req.body.password;
+  
+	accountdb.checkLogin(email, password, function (results, err) {
+		if (err) {
+			res.json({'results': err});
+		} else if (email == "" || password == "") {
+			res.json({'results': 'Please fill out all fields'});
+		} else if (results == 'account dne') {
+			res.json({'results': 'User does not exist'});
+		} else if (results == 'incorrect password') {
+			res.json({'results': 'Incorrect password'});
+		} else {
+			res.json({'results': 'Success'});
+		}
+	  });
   });
 
 /************************* MOBILE ***************************/
