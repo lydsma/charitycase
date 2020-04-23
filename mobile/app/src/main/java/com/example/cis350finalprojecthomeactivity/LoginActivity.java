@@ -36,8 +36,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText em;
     private EditText pass;
     private List<LoginActivity.User> allUsersArray;
-    private Hashtable<String, User> allUsers;
-    private HashSet<String> allEmails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +50,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginButtonClick(View v) {
-        /**for (LoginActivity.User user : allUsersArray) {
-            allEmails.add(user.email);
-            allUsers.put(user.email, user);
-        }*/
+
         em = findViewById(R.id.email);
         String email = em.getText().toString();
 
@@ -84,24 +79,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-       /** allUsersArray = new ArrayList<LoginActivity.User>();
-        allEmails = new HashSet<String>();
-
-        if (allEmails.contains(email)) {
-            User temp = allUsers.get(email);
-            // valid email
-            if (temp.password.equals(password)) {
-                // valid login, go to home
-                Intent i = new Intent(this, MainActivity.class);
-                i.putExtra(EMAIL, temp.email);
-                startActivity(i);
-            } else {
-                Toast.makeText(this, "Incorrect Email or Password.\nTry again", Toast.LENGTH_LONG);
-            }
-        } else {
-            Toast.makeText(this, "No account found with this email.\nTry again", Toast.LENGTH_LONG);
-        }*/
     }
 
     /*
