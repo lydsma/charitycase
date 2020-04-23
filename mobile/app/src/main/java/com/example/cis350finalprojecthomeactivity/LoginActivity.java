@@ -71,6 +71,7 @@ public class LoginActivity extends AppCompatActivity {
             if (msg.equals("Success")) {
                 Toast.makeText(this, "Logging in...", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.putExtra(EMAIL, email);
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Invalid login, try again", Toast.LENGTH_LONG).show();

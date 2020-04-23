@@ -93,6 +93,7 @@ public class RegisterActivity extends AppCompatActivity {
             if (msg.equals("Success")) {
                 Toast.makeText(this, "Registering...", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                i.putExtra(EMAIL, curr.email);
                 startActivity(intent);
             } else {
                 Toast.makeText(this, msg, Toast.LENGTH_LONG).show();

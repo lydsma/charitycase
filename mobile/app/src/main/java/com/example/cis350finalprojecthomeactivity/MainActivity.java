@@ -2,7 +2,9 @@ package com.example.cis350finalprojecthomeactivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -58,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     Map<Category, String> categoryToString;
     int pageNum;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         // startActivityForResult(intent, 1);
         startActivity(intent);
+
+        intent = getIntent();
+        String email = intent.getStringExtra(LoginActivity.EMAIL);
+        System.out.println(email);
 
         // get user ID
         userID = "";
