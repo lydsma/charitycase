@@ -121,12 +121,6 @@ public class RegisterActivity extends AppCompatActivity {
             // get the response and Toast it
             String msg = task.get();
 
-            //@stev and ozzi this is 4 if u need to covert to json array
-            /**
-             JSONObject arrayOfPosts = new JSONObject(msg);
-             JSONArray posts = arrayOfPosts.getJSONArray("posts");
-             */
-
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 
         } catch (MalformedURLException e) {
@@ -170,14 +164,15 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(URL... urls) {
 
-
             try {
                 URL url = urls[0];
-
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 
                 // send http GET request to server
-                connect.setRequestMethod("GET");
+                connect.setRequestMethod("POST");
+                connect.setRequestProperty("Content-Type", "application/json; utf-8"); //lyd set request format to json
+                connect.setRequestProperty("Accept", "application/json");   //lyd set response format to json
+                connect.setDoOutput(true);  //lyd set req to send content
                 connect.connect();
 
                 // read response using Scanner
