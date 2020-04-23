@@ -598,12 +598,10 @@ public class MainActivity extends AppCompatActivity {
             // get the response and Toast it
             String msg = task.get();
 
-            //@stev and ozzi this is 4 if u need to cover
-            t to json array
-            /**
-            JSONObject arrayOfPosts = new JSONObject(msg);
-            JSONArray posts = arrayOfPosts.getJSONArray("posts");
-             */
+                    //@stev and ozzi this is 4 if u need to cover
+                   // t to json array
+                    //JSONObject arrayOfPosts = new JSONObject(msg);
+                   // JSONArray posts = arrayOfPosts.getJSONArray("posts");
 
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 
