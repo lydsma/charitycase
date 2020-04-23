@@ -41,12 +41,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_view);
-
     }
 
     public void onSignUpButtonClick(View v) {
-        Intent i = new Intent(this, RegisterActivity.class);
-        startActivity(i);
+        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivity(intent);
     }
 
     public void onLoginButtonClick(View v) {

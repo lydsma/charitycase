@@ -29,62 +29,38 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
 public class RegisterActivity extends AppCompatActivity {
 
     public static final String EMAIL = "EMAIL";
-    private EditText first;
-    private EditText last;
+    private EditText name;
     private EditText em;
     private EditText pass;
-    private List<User> allUsers;
-    private HashSet<String> allEmails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_view);
+        setContentView(R.layout.register_view);
 
-        List<String> category = new ArrayList<String>();
-        category.add("Food");
-        category.add("Education");
-        category.add("Clothing");
+        Spinner spinner1 = (Spinner) findViewById(R.id.categorySpinner);
+        ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this,
+                R.array.category_array, android.R.layout.simple_spinner_item);
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner1.setAdapter(adapter1);
 
-        List<String> donorType = new ArrayList<String>();
-        donorType.add("Donor");
-        donorType.add("Recipient");
-
-        // category spinner
-        Spinner catSpinner = (Spinner) findViewById(R.id.categorySpinner);
-
-        ArrayAdapter<String> catAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_dropdown_item, category);
-        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        catSpinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
-        catSpinner.setAdapter(catAdapter);
-
-        // donor spinner
-        Spinner donSpinner = (Spinner) findViewById(R.id.userSpinner);
-
-        ArrayAdapter<String> donAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_dropdown_item, donorType);
-        donAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        donSpinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
-        donSpinner.setAdapter(donAdapter);
+        Spinner spinner2 = (Spinner) findViewById(R.id.userSpinner);
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
+                R.array.type_array, android.R.layout.simple_spinner_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner2.setAdapter(adapter2);
     }
 
     public void onSubmitButtonClick(View v) {
         Intent i = new Intent(this, MainActivity.class);
 
-        first = findViewById(R.id.storeFirstName);
-        String firstName = first.getText().toString();
-
-        last = findViewById(R.id.storeLastName);
-        String lastName = last.getText().toString();
+        name = findViewById(R.id.storeName);
+        String fullName = name.getText().toString();
 
         em = findViewById(R.id.storeEmail);
         String userEmail = em.getText().toString();
@@ -98,9 +74,7 @@ public class RegisterActivity extends AppCompatActivity {
         Spinner donSpinner = findViewById(R.id.userSpinner);
         String donorType = donSpinner.getSelectedItem().toString();
 
-        String fullName = firstName + " " + lastName;
-
-        User curr = new User(firstName, lastName, userEmail, password);
+        User curr = new User(fullName, userEmail, password);
 
         Map<String, String> input = new HashMap<String, String>();
         input.put("name", fullName);
@@ -200,14 +174,12 @@ public class RegisterActivity extends AppCompatActivity {
 
     private class User {
 
-        String firstName;
-        String lastName;
+        String fullName;
         String email;
         String password;
 
-        public User(String firstName, String lastName, String email, String password) {
-            this.firstName = firstName;
-            this.lastName = lastName;
+        public User(String name, String email, String password) {
+            this.fullName = name;
             this.email = email;
             this.password = password;
         }
