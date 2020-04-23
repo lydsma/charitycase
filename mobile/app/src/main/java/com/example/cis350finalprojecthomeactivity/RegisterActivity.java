@@ -89,7 +89,14 @@ public class RegisterActivity extends AppCompatActivity {
 
             // get the response and Toast it
             String msg = task.get();
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+
+            if (msg.equals("Success")) {
+                Toast.makeText(this, "Registering...", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            }
 
         } catch (MalformedURLException e) {
             e.printStackTrace();

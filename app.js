@@ -157,11 +157,11 @@ app.get('/signup', function (req, res) {
 	  if (err) {
 		res.json({'results': err});
 	  } else if (email == "" || password == "" || name == "") {
-		res.send('Please fill out all fields');
+		res.json({'results': 'Please fill out all fields'});
 	  } else if (results == 'account exists') {
-		res.send('User already exists');
+		res.json({'results': 'User already exists'});
 	  } else {
-		res.send('Success');
+		res.json({'results': 'Success'});
 	  }
 	});
   });
