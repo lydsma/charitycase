@@ -90,15 +90,38 @@ public class RegisterActivity extends AppCompatActivity {
             // get the response and Toast it
             String msg = task.get();
 
-            if (msg.equals("Success")) {
+            if (msg.contains("Please")) {
+                Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_LONG).show();
+            }
+
+            else if (msg.contains("User")) {
+                Toast.makeText(this, "User account already exists", Toast.LENGTH_LONG).show();
+            }
+
+            else {
                 Toast.makeText(this, "Registering...", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                i.putExtra(EMAIL, curr.email);
-                startActivity(intent);
+                intent.putExtra(EMAIL, curr.email);
+                setResult(1, intent);
+                startActivityForResult(intent, 1);
+            }
+/*
+            if (msg.equals("results: Please fill out all fields")) {
+                Toast.makeText(this, "Registering...", Toast.LENGTH_LONG).show();
+            }
+
+            if (msg.equals("Success")) {
+                Toast.makeText(this, "Registering...", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent();
+                intent.putExtra(EMAIL, curr.email);
+                setResult(1, intent);
+                finish();
             } else {
                 Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
             }
 
+
+ */
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
