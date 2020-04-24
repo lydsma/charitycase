@@ -50,14 +50,15 @@ public class MainActivity extends AppCompatActivity {
     List<Post> allPosts;
     List<Post> filteredPosts;
     boolean newPostType;
-    Category newPostCategory;
+    Post.Category newPostCategory;
     Post newPost;
 
     String userID;
     Set<Post> pinnedPosts;
 
     PopupWindow popup;
-    Map<Category, String> categoryToString;
+    Map<Post.Category, String> categoryToString;
+    Map<String, Post.Category> stringToCategory;
     int pageNum;
 
     @Override
@@ -65,34 +66,39 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        // startActivityForResult(intent, 1);
-        startActivity(intent);
-
-        intent = getIntent();
-        String email = intent.getStringExtra(LoginActivity.EMAIL);
-        System.out.println(email);
-
-        // get user ID
         userID = "";
+
+        // login and get user ID
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivityForResult(intent, 1);
 
         // start on page 0
         pageNum = 0;
 
         // set up map to link enum category to string representation
-        categoryToString = new HashMap<Category, String>();
+        categoryToString = new HashMap<Post.Category, String>();
         setUpCategoryToString();
 
         // set up post collections and add dummy posts for now (until we connect to database)
-        allPosts = new ArrayList<Post>();
-        filteredPosts = new ArrayList<Post>();
-        addDummyPosts();
+        allPosts = pullPosts();
+        filteredPosts = new ArrayList<Post>(allPosts);
 
         // refresh displayed posts on page
         refreshPage();
 
         // init pinnedPosts, eventually we will pull this from Mongo
         pinnedPosts = new HashSet<Post>();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == 1) {
+            userID = data.getStringExtra(LoginActivity.EMAIL);
+            TextView welcomeTextView = findViewById(R.id.welcome_text);
+            welcomeTextView.setText(userID);
+        }
     }
 
 
@@ -199,9 +205,9 @@ public class MainActivity extends AppCompatActivity {
                     ((CheckBox) popupContent.findViewById(R.id.include_clothing)).isChecked();
 
             for (Post post : filteredPosts) {
-                boolean passesFilter = (includeAcademic && post.category == Category.EDUCATION) ||
-                        (includeFood && post.category == Category.FOOD) ||
-                        (includeClothing && post.category == Category.CLOTHING);
+                boolean passesFilter = (includeAcademic && post.category == Post.Category.EDUCATION) ||
+                        (includeFood && post.category == Post.Category.FOOD) ||
+                        (includeClothing && post.category == Post.Category.CLOTHING);
                 if (!passesFilter) {
                     postsToRemove.add(post);
                 }
@@ -335,13 +341,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void nextPageClick(View view) {
-        /*
         if (pageNum * 3 + 3 < filteredPosts.size()) {
             pageNum++;
         }
 
-        refreshPage(); */
-        pullPosts();
+        refreshPage();
     }
 
     public void prevPageClick(View view) {
@@ -358,59 +362,7 @@ public class MainActivity extends AppCompatActivity {
      */
 
 
-    private class Post {
 
-        Category category;
-        String zipCode;
-        boolean seekingDonations;
-        Set<String> likes;
-        Set<String> tags;
-        boolean empty;
-
-        // represents empty post, can't have a final static instance bc it's an inner class
-        public Post() {
-            empty = true;
-        }
-
-        public Post(Category cat, String zip, boolean type, Set<String> tgs) {
-            empty = false;
-            this.category = cat;
-            this.zipCode = zip;
-            this.seekingDonations = type;
-            this.likes = new TreeSet<String>();
-            this.tags = tgs;
-        }
-
-        public String tagsString() {
-            if (this.tags == null || this.tags.size() == 0) {
-                return "";
-            } else {
-                String out = "";
-                for (String s : this.tags) {
-                    out += "#" + s + " ";
-                }
-
-                return out.substring(0, out.length() - 1);
-            }
-        }
-
-        public Set<String> tags() {
-            if (this.tags == null) {
-                return new TreeSet<String>();
-            } else {
-                return this.tags;
-            }
-        }
-
-        public void likePost(String user) {
-            likes.add(user);
-        }
-
-        public void unlikePost(String user) { likes.remove(user); }
-
-        public int numPins() { return likes.size(); }
-
-    }
 
 
     /*
@@ -553,9 +505,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addDummyPosts() {
-        allPosts.add(0, new Post(Category.EDUCATION, "19104", true, null));
-        allPosts.add(1, new Post(Category.FOOD, "19111", false, null));
-        allPosts.add(2, new Post(Category.CLOTHING, "19210", false, null));
+        allPosts.add(0, new Post(Post.Category.EDUCATION, "19104", true, null));
+        allPosts.add(1, new Post(Post.Category.FOOD, "19111", false, null));
+        allPosts.add(2, new Post(Post.Category.CLOTHING, "19210", false, null));
 
         for (Post post : allPosts) {
             filteredPosts.add(filteredPosts.size(), post);
@@ -603,12 +555,25 @@ public class MainActivity extends AppCompatActivity {
             // get the response and Toast it
             String msg = task.get();
 
-                    //@stev and ozzi this is 4 if u need to cover
-                   // t to json array
-                    //JSONObject arrayOfPosts = new JSONObject(msg);
-                   // JSONArray posts = arrayOfPosts.getJSONArray("posts");
+            JSONObject jsonObj = new JSONObject(msg);
+            JSONArray jsonArr = jsonObj.getJSONArray("posts");
+            List<Post> pulledPosts = new ArrayList<Post>();
 
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            for (int i = 0; i < jsonArr.length(); i++) {
+                try {
+                    JSONObject jsonPost = jsonArr.getJSONObject(i);
+                    boolean type = jsonPost.getString("type").toLowerCase().equals("recipient");
+                    String zip = jsonPost.getString("zip");
+                    String category = jsonPost.getString("category");
+                    Set<String> tags = new TreeSet<String>();
+                    tags.add(jsonPost.getString("tags"));
+                    pulledPosts.add(new Post(category, zip, type, tags));
+                } catch (Exception e) {}
+            }
+
+            Toast.makeText(this, "MADE IT", Toast.LENGTH_SHORT).show();
+
+            return pulledPosts;
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -621,7 +586,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // unpack response into List<Post> instance and return
-        return null;
+        return new ArrayList<Post>();
     }
 
     class PushNewPost extends AsyncTask<URL, String, String> {
@@ -677,7 +642,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             try {
-               URL url = urls[0];
+                URL url = urls[0];
 
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 
@@ -736,13 +701,13 @@ public class MainActivity extends AppCompatActivity {
                 if (attributeID.equals("post-category")) {
                     switch (selection) {
                         case "academic":
-                            newPostCategory = Category.EDUCATION;
+                            newPostCategory = Post.Category.EDUCATION;
                             break;
                         case "food":
-                            newPostCategory = Category.FOOD;
+                            newPostCategory = Post.Category.FOOD;
                             break;
                         case "clothing":
-                            newPostCategory = Category.CLOTHING;
+                            newPostCategory = Post.Category.CLOTHING;
                             break;
                         default:
                             break;
@@ -769,19 +734,10 @@ public class MainActivity extends AppCompatActivity {
     - enum PostType
      */
 
-
-    private enum Category {
-        FOOD, EDUCATION, CLOTHING, NULL
-    }
-
-    private enum PostType {
-        SEEK_DONOR, SEEK_RECIPIENT
-    }
-
     private void setUpCategoryToString() {
-        categoryToString.put(Category.EDUCATION, "Category: Academic supplies");
-        categoryToString.put(Category.FOOD, "Category: Food");
-        categoryToString.put(Category.CLOTHING, "Category: Clothing");
-        categoryToString.put(Category.NULL, "");
+        categoryToString.put(Post.Category.EDUCATION, "Category: Academic supplies");
+        categoryToString.put(Post.Category.FOOD, "Category: Food");
+        categoryToString.put(Post.Category.CLOTHING, "Category: Clothing");
+        categoryToString.put(Post.Category.NULL, "");
     }
 }

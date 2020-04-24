@@ -69,10 +69,14 @@ public class LoginActivity extends AppCompatActivity {
             String msg = task.get();
 
             if (msg.equals("Success")) {
-                Toast.makeText(this, "Logging in...", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Toast.makeText(this, "Logging in...", Toast.LENGTH_SHORT).show();
+                // Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                // intent.putExtra(EMAIL, email);
+                // startActivity(intent);
+                Intent intent = new Intent();
                 intent.putExtra(EMAIL, email);
-                startActivity(intent);
+                setResult(1, intent);
+                finish();
             } else {
                 Toast.makeText(this, "Invalid login, try again", Toast.LENGTH_LONG).show();
             }
