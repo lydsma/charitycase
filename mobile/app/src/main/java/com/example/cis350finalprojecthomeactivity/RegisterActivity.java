@@ -100,10 +100,10 @@ public class RegisterActivity extends AppCompatActivity {
 
             else {
                 Toast.makeText(this, "Registering...", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                Intent intent = new Intent();
                 intent.putExtra(EMAIL, curr.email);
                 setResult(1, intent);
-                startActivityForResult(intent, 1);
+                finish();
             }
 /*
             if (msg.equals("results: Please fill out all fields")) {
@@ -134,8 +134,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void onBackButtonClick(View v) {
-        Intent i = new Intent(this, LoginActivity.class);
-        startActivity(i);
+        finish();
     }
 
     /*                BACKEND FUNCTIONS                      */
