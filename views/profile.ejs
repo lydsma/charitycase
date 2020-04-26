@@ -8,6 +8,30 @@
     <% include ../views/partials/head %>
 
     <script src="http://code.jquery.com/jquery.min.js"></script>
+    <style>
+        #createPost {
+            background-color: aliceblue;
+            display: none;
+        }
+    
+        .dropdown-content {
+            position: absolute;
+            display: none;
+            background-color: #f6f6f6;
+            overflow: auto;
+            border: 1px solid #ddd;
+            transform: translateY(39px);
+            z-index: 1;
+        }
+    
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+    
+        }
+    </style>
     <script>
         $("document").ready(function() {
             $('input[type=file]').on("change", function() {
@@ -90,39 +114,72 @@
         </div>
     </nav>
     <main>
-        <div>
-        <form action="/account/profile" method="post">
         <br>
-        <br>
-        <h4><b><i> <%- nameMessage %> </i></b></h4>
-        <span>
-            <img id = "profilepic" src="" alt="ProfilePic" class="w3-border w3-padding" style="width:100%;max-width:200px">
-            <p>
-            </p>
-            <p>
-                <i>Change your profile picture: </i><input type="file" name="profPic" accept="image/*" />
-            </p>
-        </span>
-        <p>
-        <p>
-        Name: <%= nameMessage %>
-        <p>
-        Email: <%= emailMessage %>
-        <p>
-            <%if (accType) { %>
-                <p><span style="color: black;">Account Type: Recipient</span></p>
-            <% } else { %>
-                <p><span style="color: black;">Account Type: Donor</span></p>
-            <% } %>
-        <p>
+            <h1><b><i> <%- nameMessage %> </i></b></h1>
+            <span>
+                <img id = "profilepic" src="" alt="ProfilePic" class="w3-border w3-padding" style="width:100%;max-width:200px; text-align: center;">
+                <p></p>
+                <div style = "display: inline-block; font-size: 15px; color:grey">
+                    <i>Change your profile picture: </i> 
+                        <input type="file" name="profPic" accept="image/*" /> 
+                </div>
+            </span>
+            <br>
+            <br>
+        <div class="profileInfo" style="margin-top: 10px;margin-bottom: 30px;width: 100%;">
+            <div class = "stats" style = "width: 1100px; display: inline-block; text-align: center;">
+                <h3 class="border rounded border-dark shadow-lg profile-name float-left"
+                style="background-color: #56c6c6;color: #ffffff;width:50%">
+                    <p><i>Donation Posts Made:</i></p>
+                    <% if (wallposts.length==0) {%>
+                        <p>0</p>
+                        <% } else {%>
+                    <p><%=wallposts.length%></p>
+                    <% } %>
+                </h3>
+                <div style = "display: inline-block;">
+                    <p style="font-size: 20px;color: #222222;">
+                        <b>Email: <%= emailMessage %></b>
+                        <p>
+                            <%if (accType) { %>
+                                <p><span style="color: black;"><b>Account Type: Recipient</b></span></p>
+                            <% } else { %>
+                                <p><span style="color: black;"><b>Account Type: Donor</b></span></p>
+                            <% } %>
+                    </p>
+                </div>
+                <h3 class="border rounded border-dark shadow-lg profile-name float-right"
+                    style="background-color: #56c6c6;color: #ffffff;width:50%">
+                    <p><i>Donors following:</i></p>
+                        <p>0</p>
+                </h3>
+            </div>
 
-        </form>
         </div>
-
         <div class="div-signup">
-            <p></p>
 			<i><p id="signup"><font color="black"></font>Want to edit your account? <a href="/edit">You can do so here!</a></p></i>	
-		</div>
+        </div>
+        <h4><b>Your posts:</b></h4>
+
+        <div class="wallposts" id="wallposts">
+            <% if (wallposts.length != 0) {
+            for (var i = wallposts.length-1; i >= 0 ; i--) {%>
+            <div class="border rounded shadow-lg profile-card" data-bs-hover-animate="pulse"
+                style="margin-left: 15%;margin-right: 15%; margin-bottom: 15px; background-color: #ffffff;">
+                
+                <h3 class="border rounded border-dark shadow-lg profile-name"
+                    style="background-color: #56c6c6;color: #ffffff;">
+                    <%=wallposts[i].sender%></h3>
+    
+                    
+                <div class="d-table" style="margin-top: 15px;margin-bottom: 15px;width: 100%;text-align: center">
+                    <div class="float" style="width: 100%;text-align: center">
+                        <p class="my-auto" style="margin: 0;color: #222222;text-align: center"><%=wallposts[i].description%></p>
+                    </div>
+                </div>
+            </div>
+            <% } }%>
+        </div>
 </main>
 
 
