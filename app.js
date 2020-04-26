@@ -35,6 +35,7 @@ var sess; //global session var
 var accountRouter = require('./routes/accountRouter');
 var homeRouter = require('./routes/homeRouter');
 var homedb = require('./database/homedb.js');
+var accountdb = require('./database/accountdb.js');
 
 
 app.use('/public', express.static('public'));
@@ -85,9 +86,21 @@ app.get('/profile', function(req,res) {
 	var accType = req.session.recipient;
 	
 	if (email) {
-	  console.log('Loading profile page');
-	  res.render('profile.ejs', {nameMessage: name, emailMessage: email, accType: accType}); 
-	}
+		console.log('Loading profile page');
+		homedb.getFilteredPosts(name, function (results, err) {
+		  if (err) {
+			console.log(err);
+		  } else {
+			console.log('results = ' + results);
+			res.render('profile.ejs', {
+			  nameMessage: name,
+			  emailMessage: email,
+			  accType: accType,
+			  wallposts: results
+			});
+		  }
+		}) 
+	  }
   });
 
 // get editpage
@@ -106,9 +119,9 @@ app.get('/signup', function (req, res) {
 
 /************************* MOBILE ***************************/
 
-  app.get('/test', function(req,res){
+  app.post('/test', function(req,res){
 	console.log('android calling');
-	res.json({'name' : 'works'});
+	res.json({'results' : 'works'});
   });
 
  app.get('/mobilegethomeposts', function (req, res) {   // /home
@@ -121,7 +134,7 @@ app.get('/signup', function (req, res) {
 		res.json({'status':'no posts'});
 	  } else {
 		console.log('sending ' + results);
-		res.json({'posts': results});thi
+		res.json({'posts': results});
 	  }
 	}); 
   });
@@ -135,13 +148,13 @@ app.get('/signup', function (req, res) {
 		if (err) {
 			res.json({'results': err});
 		} else if (email == "" || password == "") {
-			res.json({'results': 'Please fill out all fields'});
+			res.send('Please fill out all fields');
 		} else if (results == 'account dne') {
-			res.json({'results': 'User does not exist'});
+			res.send('User does not exist');
 		} else if (results == 'incorrect password') {
-			res.json({'results': 'Incorrect password'});
+			res.send('Incorrect password');
 		} else {
-			res.json({'results': 'Success'});
+			res.send('Success');
 		}
 	  });
   });

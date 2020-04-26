@@ -20,7 +20,7 @@
     "ejs": "~2.6.1",
     "express": "^4.16.4",
     "express-session": "^1.17.1",
-    "firebase": "^7.13.1",
+    "firebase": "^7.14.1",
     "firebase-admin": "8.10.0",
     "font-awesome": "^4.7.0",
     "fs-extra": "^9.0.0",

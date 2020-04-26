@@ -75,11 +75,53 @@ router.post('/filter', function(req, res) {
     if (err) {
       console.log(err);
     } else {
-      console.log('results = ' + results)
-      res.send({'results': results})
+      console.log('results = ' + results);
+      var finalResults = [];
+      async.each(results, function(f, cb) {
+        console.log('async ' + f.sender);
+        accountdb.checkHomeProfilePic(f.sender, function (picLink, err) {
+          if (err) {
+            console.log('error');
+          } else {
+              if (picLink == '' || picLink == undefined || picLink == 'account dne') {
+                picLink = 'https://www.searchpng.com/wp-content/uploads/2019/02/Deafult-Profile-Pitcher.png';
+              }
+              var newPost = {
+                sender: f.sender,
+                type: f.type,
+                category: f.category,
+                zip: f.zip,
+                tags: f.tags,
+                description: f.description,
+                profilepic: picLink
+              };
+              finalResults.push(newPost);
+              cb();
+          }
+        });
+      }, function() {
+          console.log(JSON.stringify(finalResults));
+         //res.render('home.ejs', {'name': name, 'email': email, 'posts': finalResults});
+          res.send({'results': finalResults});
+      });
+      //res.send({'results': results})
     }
   }) 
 })
+
+
+/**router.post('/filter', function(req, res) {
+  var searchEntry = ("" + req.body.seq);
+  console.log('search entry = ' + searchEntry)
+  homedb.getFilteredPosts(searchEntry, function (results, err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('results = ' + results);
+      res.send({'results': results})
+    }
+  }) 
+})*/
 
 
 router.get('/getallposts', function(req,res){
