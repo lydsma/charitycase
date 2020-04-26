@@ -86,21 +86,9 @@ app.get('/profile', function(req,res) {
 	var accType = req.session.recipient;
 	
 	if (email) {
-		console.log('Loading profile page');
-		homedb.getFilteredPosts(name, function (results, err) {
-		  if (err) {
-			console.log(err);
-		  } else {
-			console.log('results = ' + results);
-			res.render('profile.ejs', {
-			  nameMessage: name,
-			  emailMessage: email,
-			  accType: accType,
-			  wallposts: results
-			});
-		  }
-		}) 
-	  }
+	  console.log('Loading profile page');
+	  res.render('profile.ejs', {nameMessage: name, emailMessage: email, accType: accType}); 
+	}
   });
 
 // get editpage

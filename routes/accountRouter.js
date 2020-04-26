@@ -1,8 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var accountdb = require('../database/accountdb.js');
-var homedb = require('../database/homedb.js');
-
 
 // get current user
 router.get('/currentUser', function (req, res) {
@@ -117,6 +115,22 @@ router.get('/logout', function (req, res) {
 
 
 /********************** profile ***************************/
+
+// get profile page
+router.get('/profile', function (req, res) {
+  var email = sess.email;
+  var name = sess.fullname;
+  var recipient = sess.recipient;
+
+  if (email) {
+    console.log('Loading profile page');
+    res.render('profile.ejs', {
+      nameMessage: name,
+      emailMessage: email,
+      accType: recipient
+    });
+  }
+});
 
 // load profile pic 
 router.get('/profilepic', function (req, res) {
