@@ -13,69 +13,54 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class RegisterActivity extends AppCompatActivity {
 
     public static final String EMAIL = "EMAIL";
-    private EditText first;
-    private EditText last;
+    private EditText name;
     private EditText em;
     private EditText pass;
-    private List<User> allUsers;
-    private HashSet<String> allEmails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_view);
+        setContentView(R.layout.register_view);
 
-        List<String> category = new ArrayList<String>();
-        category.add("Food");
-        category.add("Education");
-        category.add("Clothing");
+        Spinner spinner1 = (Spinner) findViewById(R.id.categorySpinner);
+        ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this,
+                R.array.category_array, android.R.layout.simple_spinner_item);
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner1.setAdapter(adapter1);
 
-        List<String> donorType = new ArrayList<String>();
-        donorType.add("Donor");
-        donorType.add("Recipient");
-
-        // category spinner
-        Spinner catSpinner = (Spinner) findViewById(R.id.categorySpinner);
-
-        ArrayAdapter<String> catAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_dropdown_item, category);
-        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        catSpinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
-        catSpinner.setAdapter(catAdapter);
-
-        // donor spinner
-        Spinner donSpinner = (Spinner) findViewById(R.id.userSpinner);
-
-        ArrayAdapter<String> donAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_dropdown_item, donorType);
-        donAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        donSpinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
-        donSpinner.setAdapter(donAdapter);
+        Spinner spinner2 = (Spinner) findViewById(R.id.userSpinner);
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
+                R.array.type_array, android.R.layout.simple_spinner_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner2.setAdapter(adapter2);
     }
 
     public void onSubmitButtonClick(View v) {
         Intent i = new Intent(this, MainActivity.class);
 
-        first = findViewById(R.id.storeFirstName);
-        String firstName = first.getText().toString();
-
-        last = findViewById(R.id.storeLastName);
-        String lastName = last.getText().toString();
+        name = findViewById(R.id.storeName);
+        String fullName = name.getText().toString();
 
         em = findViewById(R.id.storeEmail);
         String userEmail = em.getText().toString();
@@ -85,44 +70,58 @@ public class RegisterActivity extends AppCompatActivity {
 
         Spinner catSpinner = findViewById(R.id.categorySpinner);
         String category = catSpinner.getSelectedItem().toString();
-        Category userCategory = Category.EMPTY;
-        switch(category) {
-            case("Food"):
-                userCategory = Category.FOOD;
-            case("Education"):
-                userCategory = Category.EDUCATION;
-            case("Clothing"):
-                userCategory = Category.CLOTHING;
-            default:
-                break;
-        }
 
         Spinner donSpinner = findViewById(R.id.userSpinner);
         String donorType = donSpinner.getSelectedItem().toString();
-        Donor donor = Donor.EMPTY;
-        switch(donorType) {
-            case("Donor"):
-                donor = Donor.DONOR;
-            case("Recipient"):
-                donor = Donor.RECIPIENT;
-            default:
-                break;
-        }
 
-        String fullName = firstName + " " + lastName;
+        User curr = new User(fullName, userEmail, password);
 
-        User curr = new User(firstName, lastName, userEmail, password, userCategory, donor);
+        Map<String, String> input = new HashMap<String, String>();
+        input.put("name", fullName);
+        input.put("email", curr.email);
+        input.put("password", curr.password);
+        input.put("accType", donorType);
 
         try {
             URL url = new URL("http://10.0.2.2:3000/mobilesignup");
-            AsyncTask<URL, String, String> task = new RegisterUser();
+            AsyncTask<URL, String, String> task = new RegisterUser(input);
             task.execute(url);
 
             // get the response and Toast it
             String msg = task.get();
 
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            if (msg.contains("Please")) {
+                Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_LONG).show();
+            }
 
+            else if (msg.contains("User")) {
+                Toast.makeText(this, "User account already exists", Toast.LENGTH_LONG).show();
+            }
+
+            else {
+                Toast.makeText(this, "Registering...", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent();
+                intent.putExtra(EMAIL, curr.email);
+                setResult(1, intent);
+                finish();
+            }
+/*
+            if (msg.equals("results: Please fill out all fields")) {
+                Toast.makeText(this, "Registering...", Toast.LENGTH_LONG).show();
+            }
+
+            if (msg.equals("Success")) {
+                Toast.makeText(this, "Registering...", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent();
+                intent.putExtra(EMAIL, curr.email);
+                setResult(1, intent);
+                finish();
+            } else {
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            }
+
+
+ */
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -132,68 +131,69 @@ public class RegisterActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        allUsers = new ArrayList<User>();
-        allEmails = new HashSet<String>();
-
-        for (User user : allUsers) {
-            allEmails.add(user.email);
-        }
-
-        if (allEmails.contains(userEmail)) {
-            Toast.makeText(this, "Account is already registered with that email.\nTry again.", Toast.LENGTH_LONG);
-        } else {
-            //create new account, launch mainActivity
-
-            Toast.makeText(this, "Registration successful!", Toast.LENGTH_LONG);
-            i.putExtra(EMAIL, userEmail);
-
-            startActivity(i);
-        }
     }
 
     public void onBackButtonClick(View v) {
-        Intent i = new Intent(this, LoginActivity.class);
-        startActivity(i);
+        finish();
     }
 
     /*                BACKEND FUNCTIONS                      */
 
     class RegisterUser extends AsyncTask<URL, String, String> {
+        JSONObject postData;
+
+        public RegisterUser(Map<String, String> postData) {
+            if (postData != null) {
+                this.postData = new JSONObject(postData);
+            }
+        }
 
         @Override
         protected String doInBackground(URL... urls) {
-
             try {
                 URL url = urls[0];
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
-
-                // send http GET request to server
+                connect.setDoInput(true);
+                connect.setDoOutput(true);
+                connect.setRequestProperty("Content-Type", "application/json");
                 connect.setRequestMethod("POST");
-                connect.setRequestProperty("Content-Type", "application/json; utf-8"); //lyd set request format to json
-                connect.setRequestProperty("Accept", "application/json");   //lyd set response format to json
-                connect.setDoOutput(true);  //lyd set req to send content
                 connect.connect();
 
-                // read response using Scanner
-                Scanner in = new Scanner(url.openStream());
-                String msg = "";
-
-                while (in.hasNext()) {
-                    msg = in.useDelimiter("\\A").next();
+                if (this.postData != null) {
+                    OutputStreamWriter writer = new OutputStreamWriter(connect.getOutputStream());
+                    writer.write(postData.toString());
+                    writer.flush();
                 }
 
-                // JSONObject arrayOfPosts = new JSONObject(msg);
+                int statusCode = connect.getResponseCode();
 
-                // turn arrayOfPosts into allPosts
-                Log.v("string results", msg);
-                return msg;
-
+                if (statusCode ==  200) {
+                    InputStream inputStream = new BufferedInputStream(connect.getInputStream());
+                    String msg = convertInputStreamToString(inputStream);
+                    Log.v("results!", msg);
+                    return msg;
+                } else {
+                    return "error";
+                }
             } catch (IOException e) {
                 return e.toString();
             } catch (Exception e) {
                 return e.toString();
             }
+        }
+
+        private String convertInputStreamToString(InputStream inputStream) {
+            BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            try {
+                while((line = bufferedReader.readLine()) != null) {
+                    sb.append(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return sb.toString();
         }
 
     }
@@ -204,31 +204,17 @@ public class RegisterActivity extends AppCompatActivity {
 
     private class User {
 
-        Category category;
-        Donor donor;
-        String firstName;
-        String lastName;
+        String fullName;
         String email;
         String password;
 
-        public User(String firstName, String lastName, String email, String password,
-                    Category category, Donor donor) {
-            this.firstName = firstName;
-            this.lastName = lastName;
+        public User(String name, String email, String password) {
+            this.fullName = name;
             this.email = email;
             this.password = password;
-            this.category = category;
-            this.donor = donor;
         }
 
     }
 
-    private enum Category {
-        FOOD, EDUCATION, CLOTHING, EMPTY
-    }
-
-    private enum Donor {
-        DONOR, RECIPIENT, EMPTY
-    }
 
 }

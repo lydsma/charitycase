@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,26 +37,36 @@ public class LoginActivity extends AppCompatActivity {
     private EditText em;
     private EditText pass;
     private List<LoginActivity.User> allUsersArray;
-    private Hashtable<String, User> allUsers;
-    private HashSet<String> allEmails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_view);
-
     }
 
     public void onSignUpButtonClick(View v) {
-        Intent i = new Intent(this, RegisterActivity.class);
-        startActivity(i);
+        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivityForResult(intent, 1);
+        finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == 1) {
+            Intent intent = new Intent();
+            intent.putExtra(EMAIL, data.getStringExtra(RegisterActivity.EMAIL));
+            setResult(1, intent);
+
+            Toast.makeText(this, data.getStringExtra(RegisterActivity.EMAIL), Toast.LENGTH_SHORT).show();
+
+            finish();
+        }
     }
 
     public void onLoginButtonClick(View v) {
-        /**for (LoginActivity.User user : allUsersArray) {
-            allEmails.add(user.email);
-            allUsers.put(user.email, user);
-        }*/
+
         em = findViewById(R.id.email);
         String email = em.getText().toString();
 
@@ -73,7 +84,16 @@ public class LoginActivity extends AppCompatActivity {
 
             // get the response and Toast it
             String msg = task.get();
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+
+            if (msg.equals("Success")) {
+                Toast.makeText(this, "Logging in...", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.putExtra(EMAIL, email);
+                setResult(1, intent);
+                finish();
+            } else {
+                Toast.makeText(this, "Invalid login, try again", Toast.LENGTH_LONG).show();
+            }
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -84,24 +104,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-       /** allUsersArray = new ArrayList<LoginActivity.User>();
-        allEmails = new HashSet<String>();
-
-        if (allEmails.contains(email)) {
-            User temp = allUsers.get(email);
-            // valid email
-            if (temp.password.equals(password)) {
-                // valid login, go to home
-                Intent i = new Intent(this, MainActivity.class);
-                i.putExtra(EMAIL, temp.email);
-                startActivity(i);
-            } else {
-                Toast.makeText(this, "Incorrect Email or Password.\nTry again", Toast.LENGTH_LONG);
-            }
-        } else {
-            Toast.makeText(this, "No account found with this email.\nTry again", Toast.LENGTH_LONG);
-        }*/
     }
 
     /*
