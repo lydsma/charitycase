@@ -97,7 +97,7 @@ router.get('/getallposts', function(req,res){
 });
 
 router.get('/viewprofile', function(req,res){
-  var name = "Jack McKnight";
+  var name = "burner 2";
   // var name = req.params.name;
 
   accountdb.getUser(name, function(results, err) {
@@ -136,7 +136,7 @@ router.get('/viewprofile', function(req,res){
 
 router.post('/createwallpost', function(req, res) {
   var sender = req.session.fullname;
-  var receiver = "Jack McKnight";
+  var receiver = "burner 2";
   var description = req.body.description;
   
   accountdb.createWallPost(sender, receiver, description, function(results, err) {
@@ -146,6 +146,20 @@ router.post('/createwallpost', function(req, res) {
     } else {
       console.log('Created ' + results);
       res.redirect('/home/viewprofile');
+    }
+  });
+});
+
+router.post('/addfollower', function(req, res) {
+  var follower = req.session.fullname;
+  var user = req.body.user;
+  
+  accountdb.addFollower(follower, user, function(results, err) {
+    if (err) {
+      console.log(err);
+      res.json({'status':err});
+    } else {
+      console.log(follower + " followed " + user);
     }
   });
 });

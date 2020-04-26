@@ -136,7 +136,21 @@
             <p></p>
 			<i><p id="returnHome"><font color="black"></font> <a href="/">Back to Home Page</a></p></i>	
         </div>
+
+        <script type="text/javascript">
+        function followOnOff(){
+            currValue = document.getElementById("followButton").value;
+            if(currValue == "Follow"){
+                $.post('/home/addfollower', {user: "burner 2"});
+                document.getElementById("followButton").value="Unfollow";
+            } else {
+                document.getElementById("followButton").value="Follow";
+            }
+        }
+        </script>
         
+        <p></p>
+        <input type="button" value="Follow" id="followButton" onclick="followOnOff();"></button>
         <p></p>
         <button type="button" onclick="$('.wallposts').hide(); $('#createWallPost').show()">Create Wall Post</button>
         <p></p>

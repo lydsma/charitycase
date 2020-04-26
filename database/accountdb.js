@@ -19,7 +19,9 @@ var accountSchema = new Schema({    //for login
     email: String,
     password: String,
     recipient: Boolean,
-    profilepic: String
+    profilepic: String,
+    followers: [String],
+    following: [String],
 });
 
 accountSchema.methods.standardizeName = function() {
@@ -44,7 +46,9 @@ var createAccount_DB = function(nameInput, emailInput, passwordInput, accType, c
         email: emailInput,
         password: passwordInput,
         recipient: accType,
-        profilepic: ''
+        profilepic: '',
+        followers: ["Dagmawi", "Jack"],
+        following: ["Lydia", "Steven", "Ozzi"],
     });
 
     Account.findOne({email: emailInput}, (err, account) => {
@@ -225,6 +229,51 @@ var getAllWallPosts_DB = function (nameInput, callback) {
     });
 };
 
+var addFollower_DB = function (follower, user, callback) {
+    Account.find({name: user}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('user dne', null);
+        } else {
+            // if(!account.followers.includes(follower)) {
+            //     account.followers.push(follower);
+            // }
+            // account.followers.push(follower);
+
+            // Account.update(
+            //     {name: user},
+            //     {$push: {followers: follower}}
+            // );
+            console.log("user's account: " + account);
+            console.log("user's followers: " + account.followers);
+        }
+    });
+
+    Account.find({name: follower}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('follower dne', null);
+        } else {
+            // if(!account.following.includes(user)) {
+            //     followerAccount.following.push(user);
+            //     callback(account, null);
+            // }
+            // account.following.push(user);
+
+            // Account.update(
+            //     {name: follower},
+            //     {$push: {following: user}}
+            // );
+            console.log("follower's account: " + account);
+            console.log("follower's following: " + account.following);
+        }
+    });
+
+    
+}
+
 var accountdb = {
     createAccount: createAccount_DB,
     checkLogin: checkLogin_DB,
@@ -238,6 +287,7 @@ var accountdb = {
     getUser: getUser_DB,
     createWallPost: createWallPost_DB,
     getAllWallPosts: getAllWallPosts_DB,
+    addFollower: addFollower_DB,
 }
 
 module.exports = accountdb;
