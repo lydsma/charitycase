@@ -1,0 +1,65 @@
+<!-- views/viewfollowers.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ../views/partials/head %>
+</head>
+
+<body style="background-color: white;font-family: 'Open Sans', sans-serif;">
+    <nav class="navbar navbar-light navbar-expand-md navigation-clean-search">
+        <div class="container"><a class="navbar-brand" href="#">Charity Case</a><button data-toggle="collapse"
+                class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span
+                    class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="/home">home</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="/profile">account</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link active" href="/edit">edit account info</a></li>
+                </ul>
+                <form class="form-inline mr-auto" target="_self">
+                    <div class="form-group"><label for="search-field"><i class="fa fa-search"></i></label><input
+                            class="form-control search-field" type="search" id="search-field" name="search"></div>
+                </form><a class="btn btn-light action-button" role="button" href="/account/logout">logout&nbsp;</a>
+            </div>
+        </div>
+    </nav>
+    <main>
+        <br>
+        <br>
+        <h4><b><i> <%= nameMessage %>'s Followers </i></b></h4>
+        <br>
+        <% if (followersList.length == 0) {%>
+        <p>No Followers.</p>
+        <% } else {%>
+        <div class = "div-followers">
+            <% for (var i = 0; i < followersList.length; i++) {%>
+            <p>
+            <%= followersList[i] %>
+            <% } %>
+        <% } %>
+        </div>
+        <p>
+        <p>
+        <br>
+        <br>
+        <h4><b><i> <%= nameMessage %>'s Following </i></b></h4>
+        <br>
+         <% if (followingList.length == 0) {%>
+        <p>Following no Users.</p>
+        <% } else {%>
+        <div class = "div-following">
+            <% for (var i = 0; i < followingList.length; i++) {%>
+            <p>
+            <%= followingList[i] %>
+            <% } %>
+         <% } %>
+        </div>
+</main>
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="assets/js/bs-init.js"></script>
+</body>
+
+</html>

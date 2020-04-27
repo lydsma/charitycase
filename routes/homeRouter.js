@@ -142,6 +142,7 @@ router.get('/viewprofile/*', function(req,res){
   var url = req.url;
   var query = url.substring(url.indexOf(':') + 1);
   var name = query.replace("%20", " ");
+  name = name.replace("+", " ");
   if (name == null) {
     res.redirect('/');
   }
@@ -187,6 +188,7 @@ router.post('/createwallpost/*', function(req, res) {
   var url = req.url;
   var query = url.substring(url.indexOf(':') + 1);
   var receiver = query.replace("%20", " ");
+  receiver = receiver.replace("+", " ");
   if (receiver == null) {
     res.redirect('/');
   }
@@ -246,6 +248,7 @@ router.get('/checkfollower', function(req, res) {
   var url = req.url;
   var query = url.substring(url.indexOf('=') + 1);
   var user = query.replace("%20", " ");
+  user = user.replace("+", " ");
 
   accountdb.checkIfFollowing(follower, user, function(results, err) {
     if (err) {
@@ -263,6 +266,37 @@ router.get('/checkfollower', function(req, res) {
       res.send(results);
     }
   });
+});
+
+router.get('/viewfollowers/*', function(req,res){
+  var url = req.url;
+  var query = url.substring(url.indexOf(':') + 1);
+  var name = query.replace("%20", " ");
+  name = name.replace("+", " ");
+  if (name == null) {
+    res.redirect('/');
+  }
+  console.log("trying to access followers of: " + name);
+
+  accountdb.getUser(name, function(results, err) {
+    if (err) {
+      console.log(err);
+      res.json({'status':err});
+    } else if (results == 'account dne') {
+      res.json({'status':'account dne'});
+      console.log("account dne");
+    } else {
+      console.log('sending follower data of ' + results);
+      var followers = results.followers;
+      var following = results.following;
+      res.render('viewfollowers.ejs', {
+        nameMessage: name, 
+        followersList: followers, 
+        followingList: following});
+    }
+  })
+
+  
 });
 
 module.exports = router;

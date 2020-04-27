@@ -170,10 +170,16 @@
                     document.getElementById("followButton").value="Follow";
                 };
             };
+
+            function viewFollowers(){
+                window.location.href = "/home/viewfollowers/:<%= nameMessage %>";
+            };
         </script>
 
         <p></p>
         <input type="button" value="Follow" id="followButton" onclick="followOnOff();"></button>
+        <p></p>
+        <input type="button" value="View Followers" id="viewFollowers" onclick="viewFollowers();"></button>
         <p></p>
         <button type="button" onclick="$('.wallposts').hide(); $('#createWallPost').show()">Create Wall Post</button>
         <p></p>

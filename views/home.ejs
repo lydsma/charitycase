@@ -62,17 +62,6 @@
 <script>
     function passProfileInfo(name) {
         console.log("profile is: " + name);
-        // console.log("there are " + '#posts'.length + " posts");
-        // var newIndex = '#posts'.length - index;
-        // var newIndex = 16 - 1 - index;
-        // console.log("new index is: " + newIndex);
-
-        // input = document.getElementsByClassName("userProfiles")[newIndex].innerText;
-
-        // $.get('/home/viewprofile', {name: input}, function(res) {
-        //     // res.render('viewprofile.ejs', {nameMessage: res.nameMessage, emailMessage: res.emailMessage, accType: res.accType, wallposts: res.wallposts});
-        //     console.log("viewing " + input + "'s profile: posterName" + index);
-        // });
         window.location.href = '/home/viewprofile/:' + name;
     }
 </script>
