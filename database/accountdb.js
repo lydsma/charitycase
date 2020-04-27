@@ -238,6 +238,7 @@ var addFollower_DB = function (follower, user, callback) {
         } else {
             if(!account.followers.includes(follower)) {
                 account.followers.push(follower);
+                account.save();
             }
 
             console.log("user's account: " + account);
@@ -253,6 +254,7 @@ var addFollower_DB = function (follower, user, callback) {
         } else {
             if(!account.following.includes(user)) {
                 account.following.push(user);
+                account.save();
                 callback(account, null);
             }
 
@@ -270,7 +272,13 @@ var removeFollower_DB = function (follower, user, callback) {
             callback('user dne', null);
         } else {
             if(account.followers.includes(follower)) {
-                account.followers = account.followers.filter(e => e !== follower);
+                // account.followers = account.followers.filter(e => e !== follower);
+
+                var index = account.followers.indexOf(follower);    // <-- Not supported in <IE9
+                if (index !== -1) {
+                    account.followers.splice(index, 1);
+                }
+                account.save();
             }
             
             console.log("user's account: " + account);
@@ -285,7 +293,13 @@ var removeFollower_DB = function (follower, user, callback) {
             callback('follower dne', null);
         } else {
             if(account.following.includes(user)) {
-                account.following = account.following.filter(e => e !== user);
+                // account.following = account.following.filter(e => e !== user);
+
+                var index = account.following.indexOf(user);    // <-- Not supported in <IE9
+                if (index !== -1) {
+                    account.following.splice(index, 1);
+                }
+                account.save();
                 callback(account, null);
             }
 

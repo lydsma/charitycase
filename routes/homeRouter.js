@@ -184,7 +184,6 @@ router.get('/viewprofile/*', function(req,res){
 
 router.post('/createwallpost/*', function(req, res) {
   var sender = req.session.fullname;
-  // var receiver = "burner 2";
   var url = req.url;
   var query = url.substring(url.indexOf(':') + 1);
   var receiver = query.replace("%20", " ");
@@ -207,6 +206,10 @@ router.post('/createwallpost/*', function(req, res) {
 router.post('/addfollower', function(req, res) {
   var follower = req.session.fullname;
   var user = req.body.user;
+
+  // var url = req.url;
+  // var query = url.substring(url.indexOf('=') + 1);
+  // var user = query.replace("%20", " ");
   
   accountdb.addFollower(follower, user, function(results, err) {
     if (err) {
@@ -214,6 +217,50 @@ router.post('/addfollower', function(req, res) {
       res.json({'status':err});
     } else {
       console.log(follower + " followed " + user);
+    }
+  });
+});
+
+router.post('/removefollower', function(req, res) {
+  var follower = req.session.fullname;
+  var user = req.body.user;
+
+  // var url = req.url;
+  // var query = url.substring(url.indexOf('=') + 1);
+  // var user = query.replace("%20", " ");
+  
+  accountdb.removeFollower(follower, user, function(results, err) {
+    if (err) {
+      console.log(err);
+      res.json({'status':err});
+    } else {
+      console.log(follower + " unfollowed " + user);
+    }
+  });
+});
+
+router.get('/checkfollower', function(req, res) {
+  var follower = req.session.fullname;
+  // var user = req.body.user;
+
+  var url = req.url;
+  var query = url.substring(url.indexOf('=') + 1);
+  var user = query.replace("%20", " ");
+
+  accountdb.checkIfFollowing(follower, user, function(results, err) {
+    if (err) {
+      console.log(err);
+      res.json({'status':err});
+    } else {
+      if (results == true) {
+        console.log(follower + " follows " + user);
+      } else if (results == false) {
+        console.log(follower + " does not follow " + user);
+      } else {
+        console.log("we don't know if " + follower + " follows " + user);
+      }
+      
+      res.send(results);
     }
   });
 });

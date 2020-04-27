@@ -68,6 +68,16 @@
             });
         };
 
+        window.onload = function() {
+            $.get('/home/checkfollower', {user: '<%= nameMessage %>'}, function(data) {
+                if (data == true) {
+                    document.getElementById("followButton").value="Unfollow";
+                } else {
+                    document.getElementById("followButton").value="Follow";
+                }
+            });
+        };
+
     </script>
 </head>
 
@@ -138,15 +148,20 @@
         </div>
 
         <script type="text/javascript">
-        function followOnOff(){
-            currValue = document.getElementById("followButton").value;
-            if(currValue == "Follow"){
-                $.post('/home/addfollower', {user: "burner 2"});
-                document.getElementById("followButton").value="Unfollow";
-            } else {
-                document.getElementById("followButton").value="Follow";
-            }
-        }
+            function followOnOff(){
+                currValue = document.getElementById("followButton").value;
+                if(currValue == "Follow"){
+                    $.post('/home/addfollower', {user: '<%= nameMessage %>'}, function(results) {
+                        
+                    });
+                    document.getElementById("followButton").value="Unfollow";
+                } else {
+                    $.post('/home/removefollower', {user: '<%= nameMessage %>'}, function(results) {
+                    
+                    });
+                    document.getElementById("followButton").value="Follow";
+                };
+            };
         </script>
 
         <p></p>
