@@ -138,14 +138,14 @@ router.get('/getallposts', function(req,res){
   });
 });
 
-router.get('/viewprofile', function(req,res){
-  // var name = "burner 2";
+router.get('/viewprofile/*', function(req,res){
   var url = req.url;
-  var query = url.substring(url.indexOf('=') + 1);
+  var query = url.substring(url.indexOf(':') + 1);
   var name = query.replace("%20", " ");
-  // var name = req.body.name;
+  if (name == null) {
+    res.redirect('/');
+  }
   console.log("trying to access profile of: " + name);
-  // var name = req.params.name;
 
   accountdb.getUser(name, function(results, err) {
     if (err) {
@@ -173,7 +173,6 @@ router.get('/viewprofile', function(req,res){
           if (email) {
             console.log('Loading ' + name + 's profile page');
             res.render('viewprofile.ejs', {nameMessage: name, emailMessage: email, accType: recipient, wallposts: results});
-            // res.json({nameMessage: name, emailMessage: email, accType: recipient, wallposts: results}) 
             }
         }
       }); 
@@ -183,9 +182,15 @@ router.get('/viewprofile', function(req,res){
   
 });
 
-router.post('/createwallpost', function(req, res) {
+router.post('/createwallpost/*', function(req, res) {
   var sender = req.session.fullname;
-  var receiver = "burner 2";
+  // var receiver = "burner 2";
+  var url = req.url;
+  var query = url.substring(url.indexOf(':') + 1);
+  var receiver = query.replace("%20", " ");
+  if (receiver == null) {
+    res.redirect('/');
+  }
   var description = req.body.description;
   
   accountdb.createWallPost(sender, receiver, description, function(results, err) {
@@ -194,7 +199,7 @@ router.post('/createwallpost', function(req, res) {
       res.json({'status':err});
     } else {
       console.log('Created ' + results);
-      res.redirect('/home/viewprofile');
+      res.redirect('/home/viewprofile/:' + receiver);
     }
   });
 });

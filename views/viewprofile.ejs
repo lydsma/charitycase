@@ -155,7 +155,7 @@
         <button type="button" onclick="$('.wallposts').hide(); $('#createWallPost').show()">Create Wall Post</button>
         <p></p>
 
-        <form method="post" action="/home/createWallPost" id="createWallPost">
+        <form method="post" action="/home/createWallPost/:<%= nameMessage %>" id="createWallPost">
             <label for="description">Description:</label><br>
             <input type="text" id="description" name="description" value=""><br><br>
             <input type="submit" value="Submit">
