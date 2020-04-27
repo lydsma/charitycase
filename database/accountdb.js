@@ -47,8 +47,8 @@ var createAccount_DB = function(nameInput, emailInput, passwordInput, accType, c
         password: passwordInput,
         recipient: accType,
         profilepic: '',
-        followers: ["Dagmawi", "Jack"],
-        following: ["Lydia", "Steven", "Ozzi"],
+        followers: [],
+        following: [],
     });
 
     Account.findOne({email: emailInput}, (err, account) => {
@@ -230,49 +230,82 @@ var getAllWallPosts_DB = function (nameInput, callback) {
 };
 
 var addFollower_DB = function (follower, user, callback) {
-    Account.find({name: user}, (err, account) => {
+    Account.findOne({name: user}, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
             callback('user dne', null);
         } else {
-            // if(!account.followers.includes(follower)) {
-            //     account.followers.push(follower);
-            // }
-            // account.followers.push(follower);
+            if(!account.followers.includes(follower)) {
+                account.followers.push(follower);
+            }
 
-            // Account.update(
-            //     {name: user},
-            //     {$push: {followers: follower}}
-            // );
             console.log("user's account: " + account);
             console.log("user's followers: " + account.followers);
         }
     });
 
-    Account.find({name: follower}, (err, account) => {
+    Account.findOne({name: follower}, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
             callback('follower dne', null);
         } else {
-            // if(!account.following.includes(user)) {
-            //     followerAccount.following.push(user);
-            //     callback(account, null);
-            // }
-            // account.following.push(user);
+            if(!account.following.includes(user)) {
+                account.following.push(user);
+                callback(account, null);
+            }
 
-            // Account.update(
-            //     {name: follower},
-            //     {$push: {following: user}}
-            // );
             console.log("follower's account: " + account);
             console.log("follower's following: " + account.following);
         }
     });
+};
 
-    
-}
+var removeFollower_DB = function (follower, user, callback) {
+    Account.findOne({name: user}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('user dne', null);
+        } else {
+            if(account.followers.includes(follower)) {
+                account.followers = account.followers.filter(e => e !== follower);
+            }
+            
+            console.log("user's account: " + account);
+            console.log("user's followers: " + account.followers);
+        }
+    });
+
+    Account.findOne({name: follower}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('follower dne', null);
+        } else {
+            if(account.following.includes(user)) {
+                account.following = account.following.filter(e => e !== user);
+                callback(account, null);
+            }
+
+            console.log("follower's account: " + account);
+            console.log("follower's following: " + account.following);
+        }
+    });
+};
+
+var checkIfFollowing_DB = function (follower, user, callback) {
+    Account.findOne({name: follower}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('user dne', null);
+        } else {
+            callback(account.following.includes(user), null);
+        }
+    });
+};
 
 var accountdb = {
     createAccount: createAccount_DB,
@@ -288,6 +321,8 @@ var accountdb = {
     createWallPost: createWallPost_DB,
     getAllWallPosts: getAllWallPosts_DB,
     addFollower: addFollower_DB,
+    removeFollower: removeFollower_DB,
+    checkIfFollowing: checkIfFollowing_DB,
 }
 
 module.exports = accountdb;

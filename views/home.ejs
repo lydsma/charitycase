@@ -60,6 +60,23 @@
   </script>
 
 <script>
+    function passProfileInfo(index) {
+        console.log("index is: " + index);
+        console.log("there are " + '#posts'.length + " posts");
+        // var newIndex = '#posts'.length - index;
+        var newIndex = 16 - 1 - index;
+        console.log("new index is: " + newIndex);
+
+        input = document.getElementsByClassName("userProfiles")[newIndex].innerText;
+
+        $.get('/home/viewprofile', {name: input}, function(res) {
+            // res.render('viewprofile.ejs', {nameMessage: res.nameMessage, emailMessage: res.emailMessage, accType: res.accType, wallposts: res.wallposts});
+            console.log("viewing " + input + "'s profile: posterName" + index);
+        });
+    }
+</script>
+
+<script>
     $(document).ready(function () {
         $('#createPost').hide();
     })
@@ -121,7 +138,10 @@
                 src=<%=posts[i].profilepic%>>
             <h3 class="border rounded border-dark shadow-lg profile-name"
                 style="background-color: #56c6c6;color: #ffffff;">
-                <a id="posterName" name="posterName" href="/home/viewprofile"><%=posts[i].sender%></h3>
+                <!-- <a id="posterName" name="posterName" href="/home/viewprofile"><%=posts[i].sender%></h3> -->
+                <!-- <a id="posterName" name="posterName" onclick="passProfileInfo(i)"><%=posts[i].sender%> -->
+                <button type="button" class=userProfiles id="posterName" onclick="passProfileInfo(<%= i %>)"><%=posts[i].sender%></button>
+            </h3>
 
                 
             <div class="d-table" style="margin-top: 30px;margin-bottom: 30px;width: 100%;">

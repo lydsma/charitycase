@@ -139,7 +139,12 @@ router.get('/getallposts', function(req,res){
 });
 
 router.get('/viewprofile', function(req,res){
-  var name = "burner 2";
+  // var name = "burner 2";
+  var url = req.url;
+  var query = url.substring(url.indexOf('=') + 1);
+  var name = query.replace("%20", " ");
+  // var name = req.body.name;
+  console.log("trying to access profile of: " + name);
   // var name = req.params.name;
 
   accountdb.getUser(name, function(results, err) {
@@ -148,6 +153,7 @@ router.get('/viewprofile', function(req,res){
       res.json({'status':err});
     } else if (results == 'account dne') {
       res.json({'status':'account dne'});
+      console.log("account dne");
     } else {
       console.log('sending ' + results);
       var email = results.email;
@@ -165,8 +171,9 @@ router.get('/viewprofile', function(req,res){
           }
 
           if (email) {
-            console.log('Loading this users profile page');
-            res.render('viewprofile.ejs', {nameMessage: name, emailMessage: email, accType: recipient, wallposts: results}); 
+            console.log('Loading ' + name + 's profile page');
+            res.render('viewprofile.ejs', {nameMessage: name, emailMessage: email, accType: recipient, wallposts: results});
+            // res.json({nameMessage: name, emailMessage: email, accType: recipient, wallposts: results}) 
             }
         }
       }); 
