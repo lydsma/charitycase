@@ -66,9 +66,7 @@
                     $("img").attr("src","https://www.searchpng.com/wp-content/uploads/2019/02/Deafult-Profile-Pitcher.png");
                 }
             });
-        };
 
-        window.onload = function() {
             $.get('/home/checkfollower', {user: '<%= nameMessage %>'}, function(data) {
                 if (data == true) {
                     document.getElementById("followButton").value="Unfollow";
@@ -77,6 +75,16 @@
                 }
             });
         };
+
+        // window.onload = function() {
+        //     $.get('/home/checkfollower', {user: '<%= nameMessage %>'}, function(data) {
+        //         if (data == true) {
+        //             document.getElementById("followButton").value="Unfollow";
+        //         } else {
+        //             document.getElementById("followButton").value="Follow";
+        //         }
+        //     });
+        // };
 
     </script>
 </head>
