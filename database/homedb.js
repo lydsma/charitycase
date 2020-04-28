@@ -20,7 +20,9 @@ var postSchema = new Schema({ //for login
   category: String,
   zip: Number,
   tags: String,
-  description: String
+  description: String,
+  comments: Array,
+  identification: String,
 });
 
 postSchema.methods.standardizeName = function () {
@@ -32,14 +34,16 @@ var Post = mongoose.model('Posts', postSchema);
 
 /**********************DB calls*************************/
 
-var createPost_DB = function (senderInput, typeInput, categoryInput, zipInput, tags, description, callback) {
+var createPost_DB = function (senderInput, typeInput, categoryInput, zipInput, tags, description, comments, identification, callback) {
   var newPost = new Post({
     sender: senderInput,
     type: typeInput,
     category: categoryInput,
     zip: zipInput,
     tags: tags,
-    description: description
+    description: description,
+    comments: comments,
+    identification: identification
   });
 
   newPost.save((err) => {
@@ -128,10 +132,33 @@ var getFilteredPosts_DB = function (searchEntry, callback) {
   // })
 }
 
+var getComments_DB = function(post, callback) {
+  Post.findOne({identification: post}, (err, foundPost) => {
+    if (err) {
+      console.log(err)
+      callback(null, err)
+    } else {
+      callback(foundPost.comments, null)
+    }
+  })
+}
+
+var addComment_DB = function(comment, post, callback) {
+  Post.findOneAndUpdate({identification: post}, {$push: {comments: comment}}, function (err, result) {
+      if (err) {
+          callback(null, err);
+      } else {
+          callback(comment, null)
+      }
+  });
+};
+
 var homedb = {
   createPosts: createPost_DB,
   getAllPosts: getAllPosts_DB,
   getFilteredPosts: getFilteredPosts_DB,
+  getComments: getComments_DB,
+  addComment: addComment_DB,
 }
 
 module.exports = homedb;

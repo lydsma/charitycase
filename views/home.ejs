@@ -45,19 +45,68 @@
 
 <script>
     function filterFunction() {
-      input = document.getElementById("searchField");
-      if(input.value != '') {
-        $.post('/home/filter', {seq: input.value}, function(response){
-          var results = response.results;
-          $('#posts').empty();
-          for (var i = 0; i < results.length; i++) {
-              $('#posts').append("<div class='border rounded shadow-lg profile-card' data-bs-hover-animate='pulse' style='margin-left: 15%;margin-right: 15%; margin-bottom: 30px; background-color: #ffffff;'> <div class='border rounded border-dark profile-back' style='height: 80px;background-color: rgb(86,198,198);'> </div><img class='rounded-circle border rounded border-dark shadow-lg profile-pic'src=" + results[i].profilepic + ">><h3 class='border rounded border-dark shadow-lg profile-name' style='background-color: #56c6c6;color: #ffffff;'>" + results[i].sender + "</h3><div class='d-table' style='margin-top: 30px;margin-bottom: 30px;width: 100%;'><div class='float-left' style='width: 50%;color: #ffffff;'><p style='color: #222222;font-size: 20px'><strong>" + results[i].type + "</strong></p><p style='font-size: 20px;color: #222222;'><em>" + results[i].category + "</em></p><p style='color: #222222;font-size: 20px;'>zip</p></div><div class='float-right' style='width: 50%;'><p class='my-auto' style='margin: 0;color: #222222;'>" + results[i].description + "</p></div></div></div>")
-          }
-      });
-      }
+        input = document.getElementById("searchField");
+        if (input.value != '') {
+            $.post('/home/filter', {
+                seq: input.value
+            }, function (response) {
+                var results = response.results;
+                $('#posts').empty();
+                for (var i = 0; i < results.length; i++) {
+                    $('#posts').append(
+                        "<div class='border rounded shadow-lg profile-card' data-bs-hover-animate='pulse' style='margin-left: 15%;margin-right: 15%; margin-bottom: 30px; background-color: #ffffff;'> <div class='border rounded border-dark profile-back' style='height: 80px;background-color: rgb(86,198,198);'> </div><img class='rounded-circle border rounded border-dark shadow-lg profile-pic'src=" +
+                        results[i].profilepic +
+                        ">><h3 class='border rounded border-dark shadow-lg profile-name' style='background-color: #56c6c6;color: #ffffff;'>" +
+                        results[i].sender +
+                        "</h3><div class='d-table' style='margin-top: 30px;margin-bottom: 30px;width: 100%;'><div class='float-left' style='width: 50%;color: #ffffff;'><p style='color: #222222;font-size: 20px'><strong>" +
+                        results[i].type + "</strong></p><p style='font-size: 20px;color: #222222;'><em>" +
+                        results[i].category +
+                        "</em></p><p style='color: #222222;font-size: 20px;'>zip</p></div><div class='float-right' style='width: 50%;'><p class='my-auto' style='margin: 0;color: #222222;'>" +
+                        results[i].description + "</p></div></div></div>")
+                }
+            });
+        }
     }
+</script>
 
-  </script>
+<script>
+    function sendComment(postID) {
+        input = document.getElementById(postID + 'input');
+        console.log(input)
+        console.log(postID)
+        if (input.value != '') {
+            $.post('/home/addcomment', {
+                seq: input.value,
+                post: postID
+            }, function (response) {
+                var results = response.results
+               
+            })
+        }
+    }
+</script>
+
+<script>
+    function getComments(postID) {
+        console.log('MADE IT HERE')
+        console.log(postID)
+        $.post('/home/getcomments', {
+            post: postID
+        }, function (response) {
+            var results = response.results
+            console.log(results);
+            console.log(results.length);
+            document.getElementById(postID + 'button').style.visibility = 'hidden';
+            for (var i = results.length; i >=0; i--) {
+                console.log('HERE')
+                if (results[i] != undefined && results[i] != '') {
+                    console.log(results[i])
+                    $('#' + postID).append("<p>" + results[i] + "</p>")
+                }
+            }
+        })
+    }
+</script>
 
 <script>
     function passProfileInfo(name) {
@@ -98,10 +147,12 @@
                     <li class="nav-item" role="presentation"><a class="nav-link" href="/profile">account</a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link" href="/edit">edit account info</a></li>
                 </ul>
-                <div class="form-inline mr-auto"></form>
+                <div class="form-inline mr-auto">
+                    </form>
                     <div class="form-group"><label for="searchField"><i class="fa fa-search"></i></label><input
-                            class="form-control search-field" type="text" placeholder="search" id="searchField" name="searchField" onkeyup="filterFunction()"></div>
-                    </div><a class="btn btn-light action-button" role="button" href="/account/logout">logout&nbsp;</a>
+                            class="form-control search-field" type="text" placeholder="search" id="searchField"
+                            name="searchField" onkeyup="filterFunction()"></div>
+                </div><a class="btn btn-light action-button" role="button" href="/account/logout">logout&nbsp;</a>
             </div>
         </div>
     </nav>
@@ -136,37 +187,49 @@
     <% } else {%>
     <div class="posts" id="posts">
         <% for (var i = posts.length-1; i >= 0 ; i--) {%>
-        <div class="border rounded shadow-lg profile-card" data-bs-hover-animate="pulse"
-            style="margin-left: 15%;margin-right: 15%; margin-bottom: 30px; background-color: #ffffff;">
-            <div class="border rounded border-dark profile-back"
-                style="height: 80px;background-color: rgb(86,198,198);">
-            </div><img class="rounded-circle border rounded border-dark shadow-lg profile-pic"
-                src=<%=posts[i].profilepic%>>
-            <h3 class="border rounded border-dark shadow-lg profile-name"
-                style="background-color: #56c6c6;color: #ffffff;">
-                <!-- <a id="posterName" name="posterName" href="/home/viewprofile"><%=posts[i].sender%></h3> -->
-                <!-- <a id="posterName" name="posterName" onclick="passProfileInfo(i)"><%=posts[i].sender%> -->
-                <button type="button" class=userProfiles id="posterName" onclick="passProfileInfo( '<%=posts[i].sender%>' );"><%= posts[i].sender %></button>
-            </h3>
 
-                
-            <div class="d-table" style="margin-top: 30px;margin-bottom: 30px;width: 100%;">
-                <div class="float-left" style="width: 50%;color: #ffffff;">
-                    <p style="color: #222222;font-size: 20px;"><strong><%=posts[i].type%></strong></p>
-                    <p style="font-size: 20px;color: #222222;"><em><%=posts[i].category%></em></p>
-                    <p style="color: #222222;font-size: 20px;"><%=posts[i].zip%></p>
+        <% var postID = posts[i].identification %>
+        <% console.log(posts[i].identification) %>
+
+        <div>
+            <div id="<%=postID%>" class="border rounded shadow-lg profile-card" data-bs-hover-animate="pulse"
+                style="margin-left: 15%;margin-right: 15%; margin-bottom: 30px; background-color: #ffffff;">
+                <div class="border rounded border-dark profile-back"
+                    style="height: 80px;background-color: rgb(86,198,198);">
+                </div><img class="rounded-circle border rounded border-dark shadow-lg profile-pic"
+                    src=<%=posts[i].profilepic%>>
+                <h3 class="border rounded border-dark shadow-lg profile-name"
+                    style="background-color: #56c6c6;color: #ffffff;">
+                    <!-- <a id="posterName" name="posterName" href="/home/viewprofile"><%=posts[i].sender%></h3> -->
+                    <!-- <a id="posterName" name="posterName" onclick="passProfileInfo(i)"><%=posts[i].sender%> -->
+                    <button type="button" class=userProfiles id="posterName"
+                        onclick="passProfileInfo( '<%=posts[i].sender%>' );"><%= posts[i].sender %></button>
+                </h3>
+
+
+                <div class="d-table" style="margin-top: 30px;margin-bottom: 30px;width: 100%;">
+                    <div class="float-left" style="width: 50%;color: #ffffff;">
+                        <p style="color: #222222;font-size: 20px;"><strong><%=posts[i].type%></strong></p>
+                        <p style="font-size: 20px;color: #222222;"><em><%=posts[i].category%></em></p>
+                        <p style="color: #222222;font-size: 20px;"><%=posts[i].zip%></p>
+                    </div>
+                    <div class="float-right" style="width: 50%;">
+                        <p class="my-auto" style="margin: 0;color: #222222;"><%=posts[i].description%></p>
+                    </div>
                 </div>
-                <div class="float-right" style="width: 50%;">
-                    <p class="my-auto" style="margin: 0;color: #222222;"><%=posts[i].description%></p>
-                </div>
+                <button id="<%=postID + 'button'%>" class="<%=postID + 'button'%>" onclick="getComments('<%=postID%>')" style="visibility:visible;">Show comments</button>
+                <form onsubmit="return sendComment('<%=postID%>');">
+                    <input type="text" id="<%=postID + 'input'%>" name="<%=postID + 'input'%>" value="add comment here">
+                </form>
             </div>
         </div>
         <% } %>
         <% } %>
     </div>
 
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src=" assets/js/jquery.min.js"> </script>
+    <script src="assets/bootstrap/js/bootstrap.min.js">
+    </script>
     <script src="assets/js/bs-init.js"></script>
 </body>
 
