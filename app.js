@@ -239,6 +239,19 @@ app.get('/signup', function (req, res) {
 	});
   });
 
+  app.post('/mobilegetuser', function(req,res){
+	var email = req.body.email;
+	accountdb.getUserWEmail(email, function (results, err) {
+	  if (err) {
+		res.json({'accountinfo': err});
+	  } else if (results == 'account dne') {
+		res.json({'accountinfo': 'User does not exist'});
+	  } else {
+		res.json({'accountinfo': results});
+	  }
+	});
+  });
+
 /************************* MOBILE ***************************/
 
 

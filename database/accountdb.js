@@ -198,6 +198,18 @@ var getUser_DB = function(nameInput, callback) {
     });
 };
 
+var getUserWEmail_DB = function(emailInput, callback) {
+    Account.findOne({email: emailInput}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('account dne', null);
+        } else {
+            callback(account, null); //send back the account object
+        }
+    });
+}
+
 var createWallPost_DB = function (senderInput, receiverInput, description, callback) {
     var newWallPost = new WallPost({
       sender: senderInput,
@@ -386,6 +398,7 @@ var accountdb = {
     deleteAccount: deleteAccount_DB,
     checkType: checkType_DB,
     getUser: getUser_DB,
+    getUserWEmail: getUserWEmail_DB,
     createWallPost: createWallPost_DB,
     getAllWallPosts: getAllWallPosts_DB,
     addFollower: addFollower_DB,
