@@ -13,8 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
@@ -123,7 +121,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         ImageView picView = findViewById(R.id.imageView2);
-        Picasso.get().load(pic).into(ImageView);
+        Picasso.get().load(pic).into(picView);
 
     }
 
