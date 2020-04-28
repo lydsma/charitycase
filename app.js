@@ -87,20 +87,81 @@ app.get('/profile', function(req,res) {
 	
 	if (email) {
 		console.log('Loading profile page');
-		homedb.getFilteredPosts(name, function (results, err) {
+		homedb.getFilteredPosts(name, function (postresults, err) {
 		  if (err) {
 			console.log(err);
 		  } else {
-			console.log('results = ' + results);
-			res.render('profile.ejs', {
-			  nameMessage: name,
-			  emailMessage: email,
-			  accType: accType,
-			  wallposts: results
-			});
+			console.log('results = ' + postresults);
+			accountdb.getUser(name, function(results, err) {
+				if (err) {
+				  console.log(err);
+				  res.json({'status':err});
+				} else if (results == 'account dne') {
+				  res.json({'status':'account dne'});
+				  console.log("account dne");
+				} else {
+				  console.log('sending follower data of ' + results);
+				  var numFollowers = results.followers.length;
+				  var numFollowing = results.following.length;
+				  console.log('Loading profile page');
+				  res.render('profile.ejs', {
+					nameMessage: name,
+					emailMessage: email,
+					accType: accType,
+					wallposts: postresults,
+					numFollowing: numFollowing
+				  });
+				}
+			  });
 		  }
 		}) 
 	  }
+  });
+
+//get other profiles
+
+app.get('/viewprofile/*', function(req,res){
+	var url = req.url;
+	var query = url.substring(url.indexOf(':') + 1);
+	var name = query.replace("%20", " ");
+	name = name.replace("+", " ");
+	if (name == null) {
+	  res.redirect('/');
+	}
+	console.log("trying to access profile of: " + name);
+  
+	accountdb.getUser(name, function(results, err) {
+	  if (err) {
+		console.log(err);
+		res.json({'status':err});
+	  } else if (results == 'account dne') {
+		res.json({'status':'account dne'});
+		console.log("account dne");
+	  } else {
+		console.log('sending ' + results);
+		var email = results.email;
+		var recipient = results.recipient;
+		var numFollowing = results.following.length;
+  
+		accountdb.getAllWallPosts(name, function(results, err) {
+		  if (err) {
+			console.log(err);
+			res.json({'status':err});
+		  } else {
+			console.log('sending ' + results);
+  
+			if (results == 'no wall posts') {
+			  console.log("no wall posts");
+			}
+  
+			if (email) {
+			  console.log('Loading ' + name + 's profile page');
+			  res.render('viewprofile.ejs', {nameMessage: name, emailMessage: email, accType: recipient, wallposts: results, numFollowing: numFollowing});
+			  }
+		  }
+		}); 
+	  }
+	})
   });
 
 // get editpage

@@ -151,7 +151,11 @@
                 <h3 class="border rounded border-dark shadow-lg profile-name float-right"
                     style="background-color: #56c6c6;color: #ffffff;width:50%">
                     <p><i>Donors following:</i></p>
+                    <% if (numFollowing==null || numFollowing==0) {%>
                         <p>0</p>
+                        <% } else {%>
+                    <p><%=numFollowing%></p>
+                    <% } %>
                 </h3>
             </div>
 

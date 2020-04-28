@@ -171,6 +171,7 @@ router.get('/viewprofile/*', function(req,res){
       console.log('sending ' + results);
       var email = results.email;
       var recipient = results.recipient;
+      var numFollowing = results.following.length;
 
       accountdb.getAllWallPosts(name, function(results, err) {
         if (err) {
@@ -185,14 +186,12 @@ router.get('/viewprofile/*', function(req,res){
 
           if (email) {
             console.log('Loading ' + name + 's profile page');
-            res.render('viewprofile.ejs', {nameMessage: name, emailMessage: email, accType: recipient, wallposts: results});
+            res.render('viewprofile.ejs', {nameMessage: name, emailMessage: email, accType: recipient, wallposts: results, numFollowing: numFollowing});
             }
         }
       }); 
     }
   })
-
-  
 });
 
 router.post('/createwallpost/*', function(req, res) {

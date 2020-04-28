@@ -123,11 +123,25 @@ router.get('/profile', function (req, res) {
   var recipient = sess.recipient;
 
   if (email) {
-    console.log('Loading profile page');
-    res.render('profile.ejs', {
-      nameMessage: name,
-      emailMessage: email,
-      accType: recipient
+    accountdb.getUser(name, function(results, err) {
+      if (err) {
+        console.log(err);
+        res.json({'status':err});
+      } else if (results == 'account dne') {
+        res.json({'status':'account dne'});
+        console.log("account dne");
+      } else {
+        console.log('sending follower data of ' + results);
+        var numFollowers = results.followers.length;
+        var numFollowing = results.following.length;
+        console.log('Loading profile page');
+        res.render('profile.ejs', {
+          nameMessage: name,
+          emailMessage: email,
+          accType: recipient,
+          numFollowing: numFollowing
+        });
+      }
     });
   }
 });
@@ -136,6 +150,19 @@ router.get('/profile', function (req, res) {
 router.get('/profilepic', function (req, res) {
   var email = sess.email;
   accountdb.checkProfilePic(email, function (results, err) {
+    if (err) {
+      console.log('error saving');
+      res.send(err);
+    } else {
+      res.send(results);
+    }
+  });
+});
+
+// load other's pics
+router.post('/otherprofilepic', function (req, res) {
+  var user = req.body.user;
+  accountdb.checkHomeProfilePic(user, function (results, err) {
     if (err) {
       console.log('error saving');
       res.send(err);
