@@ -239,17 +239,50 @@ app.get('/signup', function (req, res) {
 	});
   });
 
-  app.post('/mobilegetuser', function(req,res){
-	var email = req.body.email;
-	accountdb.getUserWEmail(email, function (results, err) {
+  app.post('/mobilegetusers', function(req,res){
+	var name = req.body.name;
+
+	accountdb.getUser_DB(name, email, password, accType, function (results, err) {
 	  if (err) {
-		res.json({'accountinfo': err});
-	  } else if (results == 'account dne') {
-		res.json({'accountinfo': 'User does not exist'});
+		res.json({'results': err});
+	  } else if (email == "" || password == "" || name == "") {
+		res.json({'results': 'Please fill out all fields'});
+	  } else if (results == 'account exists') {
+		res.json({'results': 'User already exists'});
 	  } else {
-		res.json({'accountinfo': results});
+		res.json({'results': 'Success'});
 	  }
 	});
+  });
+
+  app.post('/mobilegetcomments', function(req,res){
+	var post = req.body.post;
+
+	homedb.getComments(post, function(results, err) {
+		if (err) {
+		  res.send(err);
+		} else {
+		  res.send({'results': results})
+		}
+	  });
+  });
+
+  app.post('/mobileaddcomment', function(req,res){
+	var comment = req.body.seq
+ 	var post = req.body.post
+ 	var user = req.session.fullname
+
+  	var commentValue = user + " " + comment;
+
+  	console.log(commentValue)
+  	console.log(post)
+	  homedb.addComment(commentValue, post, function (results, err) {
+		if (err) {
+		  console.log(err)
+		} else {
+		  res.send({'results': results})
+		}
+	  })
   });
 
 /************************* MOBILE ***************************/
