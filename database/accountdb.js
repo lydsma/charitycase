@@ -22,6 +22,7 @@ var accountSchema = new Schema({    //for login
     profilepic: String,
     followers: [String],
     following: [String],
+    postNotifs: Number,
 });
 
 accountSchema.methods.standardizeName = function() {
@@ -49,6 +50,7 @@ var createAccount_DB = function(nameInput, emailInput, passwordInput, accType, c
         profilepic: '',
         followers: [],
         following: [],
+        postNotifs: 0,
     });
 
     Account.findOne({email: emailInput}, (err, account) => {
@@ -272,9 +274,8 @@ var removeFollower_DB = function (follower, user, callback) {
             callback('user dne', null);
         } else {
             if(account.followers.includes(follower)) {
-                // account.followers = account.followers.filter(e => e !== follower);
 
-                var index = account.followers.indexOf(follower);    // <-- Not supported in <IE9
+                var index = account.followers.indexOf(follower);
                 if (index !== -1) {
                     account.followers.splice(index, 1);
                 }
@@ -293,9 +294,8 @@ var removeFollower_DB = function (follower, user, callback) {
             callback('follower dne', null);
         } else {
             if(account.following.includes(user)) {
-                // account.following = account.following.filter(e => e !== user);
 
-                var index = account.following.indexOf(user);    // <-- Not supported in <IE9
+                var index = account.following.indexOf(user);
                 if (index !== -1) {
                     account.following.splice(index, 1);
                 }
@@ -321,6 +321,60 @@ var checkIfFollowing_DB = function (follower, user, callback) {
     });
 };
 
+var getNumNotifs_DB = function (user, callback) {
+    Account.findOne({name: user}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('user dne', null);
+        } else {
+            callback(account.postNotifs, null);
+        }
+    });
+};
+
+var clearNotifs_DB = function (user, callback) {
+    Account.findOne({name: user}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('user dne', null);
+        } else {
+            account.postNotifs = 0;
+            account.save();
+            callback(account, null);
+        }
+    });
+};
+
+var updateFollowerNotifs_DB = function (user, callback) {
+    Account.findOne({name: user}, (err, account) => {
+        if (err) {
+            callback(null, err);
+        } else if (!account) {
+            callback('user dne', null);
+        } else {
+
+            for (var i = 0; i < account.followers.length; i++) {
+                var follower = account.followers[i];
+                Account.findOne({name: follower}, (err2, account2) => {
+                    if (err2) {
+                        callback(null, err2);
+                    } else if (!account2) {
+                        callback('follower dne', null);
+                    } else {
+                        account2.postNotifs++;
+                        account2.save();
+                    }
+                    
+                });
+            }
+
+            callback(account, null);
+        }
+    });
+};
+
 var accountdb = {
     createAccount: createAccount_DB,
     checkLogin: checkLogin_DB,
@@ -337,6 +391,9 @@ var accountdb = {
     addFollower: addFollower_DB,
     removeFollower: removeFollower_DB,
     checkIfFollowing: checkIfFollowing_DB,
+    getNumNotifs: getNumNotifs_DB,
+    clearNotifs: clearNotifs_DB,
+    updateFollowerNotifs: updateFollowerNotifs_DB,
 }
 
 module.exports = accountdb;

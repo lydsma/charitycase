@@ -55,7 +55,7 @@
           }
       });
       }
-}
+    }
 
   </script>
 
@@ -63,6 +63,21 @@
     function passProfileInfo(name) {
         console.log("profile is: " + name);
         window.location.href = '/home/viewprofile/:' + name;
+    }
+
+    function clearNotifs() {
+        input = document.getElementById("notifs");
+        $.post('/home/clearNotifs', function(response) {
+            input.value = "0 new posts for you";
+        });
+    }
+
+    window.onload = function getNumNotifs() {
+        input = document.getElementById("notifs");
+        $.get('/home/getNotifs', function(response) {
+            console.log("number of new posts: " + response);
+            input.value = response + " new posts for you";
+        });
     }
 </script>
 
@@ -100,6 +115,7 @@
         <p></p>
         <button type="button" onclick="$('.posts').hide(); $('#createPost').show()">Create Post</button>
         <button type="button" onclick="$('.posts').hide();">Filter</button>
+        <input type="button" id="notifs" value="0 new posts for you" onclick="clearNotifs();"></button>
         <p></p>
 
         <form method="post" action="/home/createpost" id="createPost">

@@ -131,7 +131,7 @@
                 <h3 class="border rounded border-dark shadow-lg profile-name float-left"
                 style="background-color: #56c6c6;color: #ffffff;width:50%">
                     <p><i>Donation Posts Made:</i></p>
-                    <% if (wallposts.length==0) {%>
+                    <% if (wallposts==null || wallposts.length==0) {%>
                         <p>0</p>
                         <% } else {%>
                     <p><%=wallposts.length%></p>
@@ -162,7 +162,7 @@
         <h4><b>Your posts:</b></h4>
 
         <div class="wallposts" id="wallposts">
-            <% if (wallposts.length != 0) {
+            <% if (wallposts != null && wallposts.length != 0) {
             for (var i = wallposts.length-1; i >= 0 ; i--) {%>
             <div class="border rounded shadow-lg profile-card" data-bs-hover-animate="pulse"
                 style="margin-left: 15%;margin-right: 15%; margin-bottom: 15px; background-color: #ffffff;">

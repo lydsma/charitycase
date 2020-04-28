@@ -63,7 +63,19 @@ router.post('/createpost', function(req, res) {
       res.json({'status':err});
     } else {
       console.log('Created ' + results);
-      res.redirect('/home')
+
+      accountdb.updateFollowerNotifs(sender, function(results2, err2) {
+        if (err2) {
+          console.log(err2);
+          res.json({'status':err2});
+        } else if (results2 == 'account dne') {
+          res.json({'status':'account dne'});
+          console.log("account dne");
+        } else {
+          console.log('updating notifications for all followers of ' + sender);
+          res.redirect('/home')
+        }
+      });
     }
   });
 });
@@ -294,9 +306,60 @@ router.get('/viewfollowers/*', function(req,res){
         followersList: followers, 
         followingList: following});
     }
-  })
+  });
+});
 
-  
+router.get('/getNotifs', function(req,res){
+  // var url = req.url;
+  // var query = url.substring(url.indexOf(':') + 1);
+  // var name = query.replace("%20", " ");
+  // name = name.replace("+", " ");
+
+  var name = req.session.fullname;
+  if (name == null) {
+    res.redirect('/');
+  }
+  console.log("trying to access num notifications of: " + name);
+
+  accountdb.getNumNotifs(name, function(results, err) {
+    if (err) {
+      console.log(err);
+      res.json({'status':err});
+    } else if (results == 'account dne') {
+      res.json({'status':'account dne'});
+      console.log("account dne");
+    } else {
+      console.log('sending notification data of ' + name + ": " + results + " notifications");
+      // var numNotifs = results;
+      res.send(String(results));
+    }
+  });
+});
+
+router.post('/clearNotifs', function(req,res){
+  // var url = req.url;
+  // var query = url.substring(url.indexOf(':') + 1);
+  // var name = query.replace("%20", " ");
+  // name = name.replace("+", " ");
+
+  var name = req.session.fullname;
+  if (name == null) {
+    res.redirect('/');
+  }
+  console.log("trying to clear notifications of: " + name);
+
+  accountdb.clearNotifs(name, function(results, err) {
+    if (err) {
+      console.log(err);
+      res.json({'status':err});
+    } else if (results == 'account dne') {
+      res.json({'status':'account dne'});
+      console.log("account dne");
+    } else {
+      console.log('clearing notification data of ' + name);
+      res.send(results);
+    }
+  });
 });
 
 module.exports = router;
