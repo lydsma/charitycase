@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     Map<Post.Category, String> categoryToString;
     Map<String, Post.Category> stringToCategory;
     int pageNum;
+    public static final String ID = "ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -354,6 +355,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         refreshPage();
+    }
+
+    public void onProfileClick(View view) {
+        // go to profile view
+        Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+        intent.putExtra(ID, userID);
+        startActivityForResult(intent, 1);
     }
 
 
