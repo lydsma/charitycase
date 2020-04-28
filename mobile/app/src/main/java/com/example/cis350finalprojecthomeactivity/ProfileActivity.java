@@ -1,15 +1,25 @@
 package com.example.cis350finalprojecthomeactivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -21,9 +31,17 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -36,21 +54,18 @@ public class ProfileActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         email = i.getStringExtra(MainActivity.ID);
-        TextView welcomeTextView = findViewById(R.id.textView2);
-        welcomeTextView.setText("Welcome, " + email);
 
         Map<String, String> input = new HashMap<String, String>();
         input.put("email", email);
+        String msg = "";
 
         try {
-            URL url = new URL("http://10.0.2.2:3000/viewprofile/*");
-            AsyncTask<URL, String, String> task = new ProfileActivity.LoadUser(input);
+            URL url = new URL("http://10.0.2.2:3000/mobilegetuser");
+            AsyncTask<URL, String, String> task = new LoadUser(input);
             task.execute(url);
 
             // get the response and Toast it
-            String msg = task.get();
-
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            msg = task.get();
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -61,6 +76,55 @@ public class ProfileActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+        JSONObject jsonObj = null;
+        try {
+            jsonObj = new JSONObject(msg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jsonArr = null;
+        try {
+            jsonArr = jsonObj.getJSONObject("accountinfo");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String name = "";
+        String email = "";
+        String pic = "";
+        boolean rec = true;
+
+        try {
+            name = jsonArr.getString("name");
+            email = jsonArr.getString("email");
+            pic = jsonArr.getString("profilepic");
+            rec = jsonArr.getBoolean("recipient");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        TextView welcomeTextView = findViewById(R.id.textView2);
+        welcomeTextView.setText("Welcome, " + name);
+
+        TextView nameView = findViewById(R.id.textView3);
+        nameView.setText(name);
+
+        TextView emailView = findViewById(R.id.textView5);
+        emailView.setText(email);
+
+        TextView recView = findViewById(R.id.textView7);
+        if (rec) {
+            recView.setText("Seeking donations");
+        } else {
+            recView.setText("Looking to donate");
+        }
+
+        ImageView picView = findViewById(R.id.imageView2);
+        Picasso.get().load(pic).into(ImageView);
+
     }
 
     public void onSignoutButtonClick(View v) {

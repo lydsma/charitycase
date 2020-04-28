@@ -579,7 +579,6 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception e) {}
             }
 
-            Toast.makeText(this, "MADE IT", Toast.LENGTH_SHORT).show();
 
             return pulledPosts;
 
