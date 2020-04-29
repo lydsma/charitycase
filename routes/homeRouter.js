@@ -78,12 +78,16 @@ router.post('/createpost', function (req, res) {
     } else {
       console.log('Created ' + results);
 
-      accountdb.updateFollowerNotifs(sender, function(results2, err2) {
+      accountdb.updateFollowerNotifs(sender, function (results2, err2) {
         if (err2) {
           console.log(err2);
-          res.json({'status':err2});
+          res.json({
+            'status': err2
+          });
         } else if (results2 == 'account dne') {
-          res.json({'status':'account dne'});
+          res.json({
+            'status': 'account dne'
+          });
           console.log("account dne");
         } else {
           console.log('updating notifications for all followers of ' + sender);
@@ -137,6 +141,53 @@ router.post('/filter', function (req, res) {
   })
 })
 
+router.post('/getbookmarks', function (req, res) {
+  var user = req.session.fullname;
+  console.log('HERE')
+
+  accountdb.getBookmarks(user, function (results, err) {
+    if (err) {
+      console.log(err)
+      res.send(err)
+    } else {
+      console.log('results = ' + results);
+      var finalResults = [];
+      async.each(results, function (f, cb) {
+        console.log('async ' + f);
+        homedb.getPostByID(f, function (post, err) {
+          if (err) {
+            console.log('error');
+          } else {
+            finalResults.push(post);
+            cb();
+          }
+        });
+      }, function () {
+        console.log(JSON.stringify(finalResults));
+        //res.render('home.ejs', {'name': name, 'email': email, 'posts': finalResults});
+        res.send({
+          'results': finalResults
+        });
+      });
+    }
+  })
+})
+
+router.post('/addbookmark', function (req, res) {
+  var user = req.session.fullname
+  var post = req.body.post
+
+  accountdb.addBookmark(user, post, function (results, err) {
+    if (err) {
+      console.log(err)
+    } else {
+      res.send({
+        'results': results
+      });
+    }
+  })
+})
+
 router.post('/addcomment', function (req, res) {
   var comment = req.body.seq
   var post = req.body.post
@@ -151,7 +202,9 @@ router.post('/addcomment', function (req, res) {
     if (err) {
       console.log(err)
     } else {
-      res.send({'results': results})
+      res.send({
+        'results': results
+      })
     }
   })
 })
@@ -159,11 +212,14 @@ router.post('/addcomment', function (req, res) {
 router.post('/getcomments', function (req, res) {
   var post = req.body.post
 
-  homedb.getComments(post, function(results, err) {
+  homedb.getComments(post, function (results, err) {
     if (err) {
       res.send(err);
     } else {
-      res.send({'results': results})
+      console.log(results)
+      res.send({
+        'results': results
+      })
     }
   })
 })
@@ -245,8 +301,14 @@ router.get('/viewprofile/*', function (req, res) {
 
           if (email) {
             console.log('Loading ' + name + 's profile page');
-            res.render('viewprofile.ejs', {nameMessage: name, emailMessage: email, accType: recipient, wallposts: results, numFollowing: numFollowing});
-            }
+            res.render('viewprofile.ejs', {
+              nameMessage: name,
+              emailMessage: email,
+              accType: recipient,
+              wallposts: results,
+              numFollowing: numFollowing
+            });
+          }
         }
       });
     }
@@ -380,7 +442,7 @@ router.get('/viewfollowers/*', function (req, res) {
   });
 });
 
-router.get('/getNotifs', function(req,res){
+router.get('/getNotifs', function (req, res) {
   // var url = req.url;
   // var query = url.substring(url.indexOf(':') + 1);
   // var name = query.replace("%20", " ");
@@ -392,12 +454,16 @@ router.get('/getNotifs', function(req,res){
   }
   console.log("trying to access num notifications of: " + name);
 
-  accountdb.getNumNotifs(name, function(results, err) {
+  accountdb.getNumNotifs(name, function (results, err) {
     if (err) {
       console.log(err);
-      res.json({'status':err});
+      res.json({
+        'status': err
+      });
     } else if (results == 'account dne') {
-      res.json({'status':'account dne'});
+      res.json({
+        'status': 'account dne'
+      });
       console.log("account dne");
     } else {
       console.log('sending notification data of ' + name + ": " + results + " notifications");
@@ -407,7 +473,7 @@ router.get('/getNotifs', function(req,res){
   });
 });
 
-router.post('/clearNotifs', function(req,res){
+router.post('/clearNotifs', function (req, res) {
   // var url = req.url;
   // var query = url.substring(url.indexOf(':') + 1);
   // var name = query.replace("%20", " ");
@@ -419,12 +485,16 @@ router.post('/clearNotifs', function(req,res){
   }
   console.log("trying to clear notifications of: " + name);
 
-  accountdb.clearNotifs(name, function(results, err) {
+  accountdb.clearNotifs(name, function (results, err) {
     if (err) {
       console.log(err);
-      res.json({'status':err});
+      res.json({
+        'status': err
+      });
     } else if (results == 'account dne') {
-      res.json({'status':'account dne'});
+      res.json({
+        'status': 'account dne'
+      });
       console.log("account dne");
     } else {
       console.log('clearing notification data of ' + name);
