@@ -70,6 +70,42 @@
 </script>
 
 <script>
+    function getBookmarks() {
+        $.post('/home/getbookmarks', {}, function (response) {
+            var results = response.results;
+            console.log(results)
+            $('#posts').empty();
+            for (var i = 0; i < results.length; i++) {
+                $('#posts').append(
+                    "<div class='border rounded shadow-lg profile-card' data-bs-hover-animate='pulse' style='margin-left: 15%;margin-right: 15%; margin-bottom: 30px; background-color: #ffffff;'> <div class='border rounded border-dark profile-back' style='height: 80px;background-color: rgb(86,198,198);'> </div><img class='rounded-circle border rounded border-dark shadow-lg profile-pic'src=" +
+                    results[i].profilepic +
+                    ">><h3 class='border rounded border-dark shadow-lg profile-name' style='background-color: #56c6c6;color: #ffffff;'>" +
+                    results[i].sender +
+                    "</h3><div class='d-table' style='margin-top: 30px;margin-bottom: 30px;width: 100%;'><div class='float-left' style='width: 50%;color: #ffffff;'><p style='color: #222222;font-size: 20px'><strong>" +
+                    results[i].type + "</strong></p><p style='font-size: 20px;color: #222222;'><em>" +
+                    results[i].category +
+                    "</em></p><p style='color: #222222;font-size: 20px;'>zip</p></div><div class='float-right' style='width: 50%;'><p class='my-auto' style='margin: 0;color: #222222;'>" +
+                    results[i].description + "</p></div></div></div>")
+            }
+        })
+    }
+</script>
+
+<script>
+    function addBookmark(postID) {
+        $.post('/home/addbookmark', {
+            post: postID
+        }, function (response) {
+            var results = response.results
+            console.log(results)
+            if (results == 'success') {
+                document.getElementById(postID + 'bookmark').style.visibility = 'hidden';
+            }
+        })
+    }
+</script>
+
+<script>
     function sendComment(postID) {
         input = document.getElementById(postID + 'input');
         console.log(input)
@@ -80,7 +116,6 @@
                 post: postID
             }, function (response) {
                 var results = response.results
-               
             })
         }
     }
@@ -97,7 +132,7 @@
             console.log(results);
             console.log(results.length);
             document.getElementById(postID + 'button').style.visibility = 'hidden';
-            for (var i = results.length; i >=0; i--) {
+            for (var i = results.length; i >= 0; i--) {
                 console.log('HERE')
                 if (results[i] != undefined && results[i] != '') {
                     console.log(results[i])
@@ -116,14 +151,14 @@
 
     function clearNotifs() {
         input = document.getElementById("notifs");
-        $.post('/home/clearNotifs', function(response) {
+        $.post('/home/clearNotifs', function (response) {
             input.value = "0 new posts for you";
         });
     }
 
     window.onload = function getNumNotifs() {
         input = document.getElementById("notifs");
-        $.get('/home/getNotifs', function(response) {
+        $.get('/home/getNotifs', function (response) {
             console.log("number of new posts: " + response);
             input.value = response + " new posts for you";
         });
@@ -166,6 +201,7 @@
         <p></p>
         <button type="button" onclick="$('.posts').hide(); $('#createPost').show()">Create Post</button>
         <button type="button" onclick="$('.posts').hide();">Filter</button>
+        <button type="button" onclick="return getBookmarks();">Show Bookmarks</button>
         <input type="button" id="notifs" value="0 new posts for you" onclick="clearNotifs();"></button>
         <p></p>
 
@@ -181,6 +217,7 @@
             <input type="submit" value="Submit">
             <button type="button" onclick="$('.posts').show(); $('#createPost').hide()">Cancel</button>
         </form>
+
     </div>
     <% if (posts == null) {%>
     <p>No posts available.</p>
@@ -217,7 +254,11 @@
                         <p class="my-auto" style="margin: 0;color: #222222;"><%=posts[i].description%></p>
                     </div>
                 </div>
-                <button id="<%=postID + 'button'%>" class="<%=postID + 'button'%>" onclick="getComments('<%=postID%>')" style="visibility:visible;">Show comments</button>
+                <button id="<%=postID + 'button'%>" class="<%=postID + 'button'%>" onclick="getComments('<%=postID%>')"
+                    style="visibility:visible;">Show comments</button>
+                <button id="<%=postID + 'bookmark'%>" class="<%=postID + 'bookmark'%>"
+                    onclick="addBookmark('<%=postID%>')" style="visibility:visible;">Add to bookmarks</button>
+
                 <form onsubmit="return sendComment('<%=postID%>');">
                     <input type="text" id="<%=postID + 'input'%>" name="<%=postID + 'input'%>" value="add comment here">
                 </form>

@@ -153,12 +153,24 @@ var addComment_DB = function(comment, post, callback) {
   });
 };
 
+var getPostByID_DB = function(id, callback) {
+  Post.findOne({identification: id}, (err, foundPost) => {
+    if (err) {
+      console.log(err)
+      callback(null, err)
+    } else {
+      callback(foundPost, null)
+    }
+  })
+}
+
 var homedb = {
   createPosts: createPost_DB,
   getAllPosts: getAllPosts_DB,
   getFilteredPosts: getFilteredPosts_DB,
   getComments: getComments_DB,
   addComment: addComment_DB,
+  getPostByID: getPostByID_DB,
 }
 
 module.exports = homedb;

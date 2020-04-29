@@ -1,21 +1,24 @@
 var mongoose = require('mongoose');
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://dbUser350:mn%25Q3e5%24@cluster0-q1ukr.gcp.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb+srv://dbUser350:mn%25Q3e5%24@cluster0-q1ukr.gcp.mongodb.net/test?retryWrites=true&w=majority', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 mongoose.set('useFindAndModify', false);
 var db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  console.info('Connected to account db');
+db.once('open', function () {
+    console.info('Connected to account db');
 });
 
 /*************************************************/
 
 var Schema = mongoose.Schema;
 
-var accountSchema = new Schema({    //for login
-	name: String, 
+var accountSchema = new Schema({ //for login
+    name: String,
     email: String,
     password: String,
     recipient: Boolean,
@@ -23,9 +26,10 @@ var accountSchema = new Schema({    //for login
     followers: [String],
     following: [String],
     postNotifs: Number,
+    bookmarks: Array,
 });
 
-accountSchema.methods.standardizeName = function() {
+accountSchema.methods.standardizeName = function () {
     this.name = this.name.toLowerCase();
     return this.name;
 }
@@ -41,9 +45,9 @@ var WallPost = mongoose.model('WallPosts', wallPostSchema);
 
 /***********************DB calls**************************/
 
-var createAccount_DB = function(nameInput, emailInput, passwordInput, accType, callback) {
-    var newAcct = new Account ({
-		name: nameInput,
+var createAccount_DB = function (nameInput, emailInput, passwordInput, accType, callback) {
+    var newAcct = new Account({
+        name: nameInput,
         email: emailInput,
         password: passwordInput,
         recipient: accType,
@@ -51,14 +55,17 @@ var createAccount_DB = function(nameInput, emailInput, passwordInput, accType, c
         followers: [],
         following: [],
         postNotifs: 0,
+        bookmarks: [],
     });
 
-    Account.findOne({email: emailInput}, (err, account) => {
+    Account.findOne({
+        email: emailInput
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
-           console.log('Creating account');
-           newAcct.save( (err) => { 
+            console.log('Creating account');
+            newAcct.save((err) => {
                 if (err) {
                     res.type('html').status(200);
                     res.write('uh oh: ' + err);
@@ -69,16 +76,18 @@ var createAccount_DB = function(nameInput, emailInput, passwordInput, accType, c
                     console.log('Successfully saved: ' + newAcct);
                     callback(newAcct, null);
                 }
-            }); 
+            });
         } else {
             console.log('account exists');
-            callback('account exists', null); 
+            callback('account exists', null);
         }
     });
 };
 
-var checkLogin_DB = function(emailInput, passwordInput, callback) {
-    Account.findOne({email: emailInput}, (err, account) => {
+var checkLogin_DB = function (emailInput, passwordInput, callback) {
+    Account.findOne({
+        email: emailInput
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
@@ -94,34 +103,48 @@ var checkLogin_DB = function(emailInput, passwordInput, callback) {
     });
 };
 
-var changeName_DB = function(emailInput, nameInput, callback) {
-    Account.findOneAndUpdate({email: emailInput}, {name: nameInput}, {new: true}, function (err, result) {
+var changeName_DB = function (emailInput, nameInput, callback) {
+    Account.findOneAndUpdate({
+        email: emailInput
+    }, {
+        name: nameInput
+    }, {
+        new: true
+    }, function (err, result) {
         if (err) {
             callback(null, err);
         } else {
             console.log(nameInput);
             console.log(result.name);
             if (nameInput == result.name) {
-                callback(result.name,null);
+                callback(result.name, null);
             };
         }
     });
 };
 
-var changePassword_DB = function(emailInput, pwInput, callback) {
-    Account.findOneAndUpdate({email: emailInput}, {password: pwInput}, {new: true}, function (err, result) {
+var changePassword_DB = function (emailInput, pwInput, callback) {
+    Account.findOneAndUpdate({
+        email: emailInput
+    }, {
+        password: pwInput
+    }, {
+        new: true
+    }, function (err, result) {
         if (err) {
             callback(null, err);
         } else {
             if (pwInput == result.password) {
-                callback(result.password,null);
+                callback(result.password, null);
             };
         }
     });
 };
 
-var checkProfilePic_DB = function(emailInput, callback) {
-    Account.findOne({email: emailInput}, (err, account) => {
+var checkProfilePic_DB = function (emailInput, callback) {
+    Account.findOne({
+        email: emailInput
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
@@ -132,8 +155,10 @@ var checkProfilePic_DB = function(emailInput, callback) {
     });
 };
 
-var checkHomeProfilePic_DB = function(nameInput, callback) {
-    Account.findOne({name: nameInput}, (err, account) => {
+var checkHomeProfilePic_DB = function (nameInput, callback) {
+    Account.findOne({
+        name: nameInput
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
@@ -144,8 +169,10 @@ var checkHomeProfilePic_DB = function(nameInput, callback) {
     });
 };
 
-var checkType_DB = function(emailInput, callback) {
-    Account.findOne({email: emailInput}, (err, account) => {
+var checkType_DB = function (emailInput, callback) {
+    Account.findOne({
+        email: emailInput
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
@@ -161,24 +188,32 @@ var checkType_DB = function(emailInput, callback) {
     });
 };
 
-var changeProfilePic_DB = function(emailInput, newProfilePic, callback) {
-    Account.findOneAndUpdate({email: emailInput}, {profilepic: newProfilePic}, {new: true}, function (err, result) {
+var changeProfilePic_DB = function (emailInput, newProfilePic, callback) {
+    Account.findOneAndUpdate({
+        email: emailInput
+    }, {
+        profilepic: newProfilePic
+    }, {
+        new: true
+    }, function (err, result) {
         if (err) {
             callback(null, err);
         } else {
             if (newProfilePic == result.profilepic) {
                 console.log('db ' + result.profilepic);
-                callback(result.profilepic,null);
+                callback(result.profilepic, null);
             };
         }
     });
 };
 
-var deleteAccount_DB = function(emailInput, callback) {
-    Account.deleteOne({email: emailInput}, function(err) {
+var deleteAccount_DB = function (emailInput, callback) {
+    Account.deleteOne({
+        email: emailInput
+    }, function (err) {
         if (err) {
             console.log(err);
-            callback(null,err);
+            callback(null, err);
         } else {
             console.log('success');
             callback(emailInput, null);
@@ -186,8 +221,10 @@ var deleteAccount_DB = function(emailInput, callback) {
     });
 };
 
-var getUser_DB = function(nameInput, callback) {
-    Account.findOne({name: nameInput}, (err, account) => {
+var getUser_DB = function (nameInput, callback) {
+    Account.findOne({
+        name: nameInput
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
@@ -212,27 +249,29 @@ var getUserWEmail_DB = function(emailInput, callback) {
 
 var createWallPost_DB = function (senderInput, receiverInput, description, callback) {
     var newWallPost = new WallPost({
-      sender: senderInput,
-      receiver: receiverInput,
-      description: description
+        sender: senderInput,
+        receiver: receiverInput,
+        description: description
     });
-  
+
     newWallPost.save((err) => {
-      if (err) {
-        res.type('html').status(200);
-        res.write('uh oh: ' + err);
-        console.log(err);
-        callback(null, err);
-      } else {
-        // display the "successfull created" page using EJS
-        console.log('Successfully saved: ' + newWallPost);
-        callback(newWallPost, null);
-      }
+        if (err) {
+            res.type('html').status(200);
+            res.write('uh oh: ' + err);
+            console.log(err);
+            callback(null, err);
+        } else {
+            // display the "successfull created" page using EJS
+            console.log('Successfully saved: ' + newWallPost);
+            callback(newWallPost, null);
+        }
     });
-  };
+};
 
 var getAllWallPosts_DB = function (nameInput, callback) {
-    WallPost.find({receiver: nameInput}, (err, allWallPosts) => {
+    WallPost.find({
+        receiver: nameInput
+    }, (err, allWallPosts) => {
         if (err) {
             callback(null, err);
         } else if (allWallPosts.length == 0) {
@@ -244,13 +283,15 @@ var getAllWallPosts_DB = function (nameInput, callback) {
 };
 
 var addFollower_DB = function (follower, user, callback) {
-    Account.findOne({name: user}, (err, account) => {
+    Account.findOne({
+        name: user
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
             callback('user dne', null);
         } else {
-            if(!account.followers.includes(follower)) {
+            if (!account.followers.includes(follower)) {
                 account.followers.push(follower);
                 account.save();
             }
@@ -260,13 +301,15 @@ var addFollower_DB = function (follower, user, callback) {
         }
     });
 
-    Account.findOne({name: follower}, (err, account) => {
+    Account.findOne({
+        name: follower
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
             callback('follower dne', null);
         } else {
-            if(!account.following.includes(user)) {
+            if (!account.following.includes(user)) {
                 account.following.push(user);
                 account.save();
                 callback(account, null);
@@ -279,13 +322,15 @@ var addFollower_DB = function (follower, user, callback) {
 };
 
 var removeFollower_DB = function (follower, user, callback) {
-    Account.findOne({name: user}, (err, account) => {
+    Account.findOne({
+        name: user
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
             callback('user dne', null);
         } else {
-            if(account.followers.includes(follower)) {
+            if (account.followers.includes(follower)) {
 
                 var index = account.followers.indexOf(follower);
                 if (index !== -1) {
@@ -293,19 +338,21 @@ var removeFollower_DB = function (follower, user, callback) {
                 }
                 account.save();
             }
-            
+
             console.log("user's account: " + account);
             console.log("user's followers: " + account.followers);
         }
     });
 
-    Account.findOne({name: follower}, (err, account) => {
+    Account.findOne({
+        name: follower
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
             callback('follower dne', null);
         } else {
-            if(account.following.includes(user)) {
+            if (account.following.includes(user)) {
 
                 var index = account.following.indexOf(user);
                 if (index !== -1) {
@@ -322,7 +369,9 @@ var removeFollower_DB = function (follower, user, callback) {
 };
 
 var checkIfFollowing_DB = function (follower, user, callback) {
-    Account.findOne({name: follower}, (err, account) => {
+    Account.findOne({
+        name: follower
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
@@ -334,7 +383,9 @@ var checkIfFollowing_DB = function (follower, user, callback) {
 };
 
 var getNumNotifs_DB = function (user, callback) {
-    Account.findOne({name: user}, (err, account) => {
+    Account.findOne({
+        name: user
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
@@ -346,7 +397,9 @@ var getNumNotifs_DB = function (user, callback) {
 };
 
 var clearNotifs_DB = function (user, callback) {
-    Account.findOne({name: user}, (err, account) => {
+    Account.findOne({
+        name: user
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
@@ -360,7 +413,9 @@ var clearNotifs_DB = function (user, callback) {
 };
 
 var updateFollowerNotifs_DB = function (user, callback) {
-    Account.findOne({name: user}, (err, account) => {
+    Account.findOne({
+        name: user
+    }, (err, account) => {
         if (err) {
             callback(null, err);
         } else if (!account) {
@@ -369,7 +424,9 @@ var updateFollowerNotifs_DB = function (user, callback) {
 
             for (var i = 0; i < account.followers.length; i++) {
                 var follower = account.followers[i];
-                Account.findOne({name: follower}, (err2, account2) => {
+                Account.findOne({
+                    name: follower
+                }, (err2, account2) => {
                     if (err2) {
                         callback(null, err2);
                     } else if (!account2) {
@@ -378,11 +435,44 @@ var updateFollowerNotifs_DB = function (user, callback) {
                         account2.postNotifs++;
                         account2.save();
                     }
-                    
+
                 });
             }
 
             callback(account, null);
+        }
+    });
+};
+
+var getBookmarks_DB = function (user, callback) {
+    Account.findOne({
+        name: user
+    }, (err, foundAccount) => {
+        if (err) {
+            console.log(err);
+            callback(null, err)
+        } else {
+            console.log(foundAccount)
+            callback(foundAccount.bookmarks, null)
+        }
+    })
+}
+
+var addBookmark_DB = function (user, post, callback) {
+    Account.findOneAndUpdate({
+        name: user
+    }, {
+        $push: {
+            bookmarks: post
+        }
+    }, function (err, result) {
+        if (err) {
+            callback(null, err);
+        } else {
+            console.log(user)
+            console.log(post);
+            console.log(result)
+            callback('success', null)
         }
     });
 };
@@ -407,6 +497,8 @@ var accountdb = {
     getNumNotifs: getNumNotifs_DB,
     clearNotifs: clearNotifs_DB,
     updateFollowerNotifs: updateFollowerNotifs_DB,
+    getBookmarks: getBookmarks_DB,
+    addBookmark: addBookmark_DB,
 }
 
 module.exports = accountdb;
