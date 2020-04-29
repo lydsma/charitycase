@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         Set<String> tags = parseTags(tagsEditText.getText().toString());
 
         // make the new post and add it to all posts
-        newPost = new Post(newPostCategory, zip, newPostType, tags);
+        newPost = new Post(newPostCategory, zip, newPostType, tags, null);
         allPosts.add(allPosts.size(), newPost);
         filteredPosts.add(filteredPosts.size(), newPost);
 
@@ -416,6 +416,7 @@ public class MainActivity extends AppCompatActivity {
         int typeId = idNameToInt("post" + idxId + "type");
         int tagsId = idNameToInt("post" + idxId + "tags");
         int pinsId = idNameToInt("post" + idxId + "pins");
+        int comsId = idNameToInt("post" + idxId + "comments");
         int pinButtonId = idNameToInt("post" + idxId + "pinbutton");
 
         TextView titleView = findViewById(titleId);
@@ -424,6 +425,7 @@ public class MainActivity extends AppCompatActivity {
         TextView typeView = findViewById(typeId);
         TextView tagsView = findViewById(tagsId);
         TextView pinsView = findViewById(pinsId);
+        TextView comsView = findViewById(comsId);
         Button pinButton = findViewById(pinButtonId);
 
         if (post.empty) {
@@ -437,6 +439,7 @@ public class MainActivity extends AppCompatActivity {
             String category = categoryToString.get(post.category);
             String zip = post.zipCode;
             String seekingDonations;
+            ArrayList<String> comments = post.comments;
 
             if (post.seekingDonations) {
                 seekingDonations = "Seeking donations";
@@ -447,6 +450,7 @@ public class MainActivity extends AppCompatActivity {
             titleView.setText("Post " + (idx + 1));
             categoryView.setText(category);
             zipView.setText("Zip Code: " + zip);
+            comsView.setText("Comments: " + comments.toString());
             typeView.setText(seekingDonations);
             tagsView.setText("Tags: " + post.tagsString());
 
@@ -513,9 +517,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addDummyPosts() {
-        allPosts.add(0, new Post(Post.Category.EDUCATION, "19104", true, null));
-        allPosts.add(1, new Post(Post.Category.FOOD, "19111", false, null));
-        allPosts.add(2, new Post(Post.Category.CLOTHING, "19210", false, null));
+        allPosts.add(0, new Post(Post.Category.EDUCATION, "19104", true, null, null));
+        allPosts.add(1, new Post(Post.Category.FOOD, "19111", false, null, null));
+        allPosts.add(2, new Post(Post.Category.CLOTHING, "19210", false, null, null));
 
         for (Post post : allPosts) {
             filteredPosts.add(filteredPosts.size(), post);
@@ -574,8 +578,15 @@ public class MainActivity extends AppCompatActivity {
                     String zip = jsonPost.getString("zip");
                     String category = jsonPost.getString("category");
                     Set<String> tags = new TreeSet<String>();
+                    JSONArray comments = jsonPost.getJSONArray("comments");
+
+                    ArrayList com = new ArrayList<String>();
+                    for (int j = 0; i < comments.length(); i++) {
+                        com.add(comments.getJSONObject(j));
+                    }
+
                     tags.add(jsonPost.getString("tags"));
-                    pulledPosts.add(new Post(category, zip, type, tags));
+                    pulledPosts.add(new Post(category, zip, type, tags, com));
                 } catch (Exception e) {}
             }
 

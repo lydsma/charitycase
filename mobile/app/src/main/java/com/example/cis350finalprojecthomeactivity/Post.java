@@ -1,5 +1,6 @@
 package com.example.cis350finalprojecthomeactivity;
 
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -11,22 +12,24 @@ class Post {
     Set<String> likes;
     Set<String> tags;
     boolean empty;
+    ArrayList<String> comments;
 
     // represents empty post, can't have a final static instance bc it's an inner class
     public Post() {
         empty = true;
     }
 
-    public Post(Category cat, String zip, boolean type, Set<String> tgs) {
+    public Post(Category cat, String zip, boolean type, Set<String> tgs, ArrayList<String> comments) {
         empty = false;
         this.category = cat;
         this.zipCode = zip;
         this.seekingDonations = type;
         this.likes = new TreeSet<String>();
         this.tags = tgs;
+        this.comments = comments;
     }
 
-    public Post(String cat, String zip, boolean type, Set<String> tgs) {
+    public Post(String cat, String zip, boolean type, Set<String> tgs, ArrayList<String> comments) {
         Category catEnum = Category.NULL;
         if (cat.toLowerCase().equals("education")) {
             catEnum = Category.EDUCATION;
@@ -42,6 +45,7 @@ class Post {
         this.seekingDonations = type;
         this.likes = new TreeSet<String>();
         this.tags = tgs;
+        this.comments = comments;
     }
 
     public String tagsString() {
